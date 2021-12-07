@@ -1,8 +1,8 @@
 import abc
-from functools import cache, cached_property
-from functools import _CacheInfo as CacheInfo
 import itertools
 import math
+from functools import _CacheInfo as CacheInfo
+from functools import cache, cached_property
 from typing import Any, Callable, Sequence, overload
 
 BoundType = tuple[float, float]
@@ -36,14 +36,16 @@ def round_nearest(num, to):
 def round_down(num: float, to: float) -> float:
     # Ref: https://stackoverflow.com/a/70210770/
     nearest = round_nearest(num, to)
-    if math.isclose(num, nearest): return num
+    if math.isclose(num, nearest):
+        return num
     return nearest if nearest < num else nearest - to
 
 
 def round_up(num: float, to: float) -> float:
     # Ref: https://stackoverflow.com/a/70210770/
     nearest = round_nearest(num, to)
-    if math.isclose(num, nearest): return num
+    if math.isclose(num, nearest):
+        return num
     return nearest if nearest > num else nearest + to
 
 
@@ -61,7 +63,7 @@ class BaseVar(abc.ABC):
     @abc.abstractmethod
     def bounds(self) -> BoundsType:
         """Return the encoded bounds to provide to an optimizer such as `scipy.optimize`."""
-        return (0.0, 1.0),
+        return ((0.0, 1.0),)
 
     @abc.abstractmethod
     def decode(self, encoded: EncodingType, /) -> Any:
@@ -78,14 +80,14 @@ class UniformVar(BaseVar):
 
     @cached_property
     def bounds(self) -> BoundsType:
-        return (self.lower, self.upper),
+        return ((self.lower, self.upper),)
 
     def decode(self, encoded: EncodingType, /) -> float:
         assert len(encoded) == 1
         assert isinstance(encoded[0], (float, int))
         assert self.bounds[0][0] <= encoded[0] <= self.bounds[0][1]  # Invalid encoded value.
         decoded = float(encoded[0])
-        assert (self.lower <= decoded <= self.upper), decoded  # Invalid decoded value.
+        assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
         return decoded
 
 
@@ -104,17 +106,17 @@ class QuniformVar(BaseVar):
         quantized_upper = round_down(self.upper, self.quantum)
         assert self.lower <= quantized_lower <= quantized_upper <= self.upper
         assert self.quantum <= (quantized_upper - quantized_lower)
-        return (next_float(quantized_lower - half_step), prev_float(quantized_upper + half_step)),
+        return ((next_float(quantized_lower - half_step), prev_float(quantized_upper + half_step)),)
         # Note: Using half_step allows uniform probability for boundary values of encoded range.
         # Note: Using next_float and prev_float prevent decoding a boundary value of encoded range to a decoded value outside the valid decoded range.
 
     def decode(self, encoded: EncodingType, /) -> float:
         assert len(encoded) == 1
         assert isinstance(encoded[0], (float, int))
-        assert (self.bounds[0][0] <= encoded[0] <= self.bounds[0][1])  # Invalid encoded value.
+        assert self.bounds[0][0] <= encoded[0] <= self.bounds[0][1]  # Invalid encoded value.
         decoded = round_nearest(encoded[0], self.quantum)
         assert isinstance(decoded, float)
-        assert (self.lower <= decoded <= self.upper), decoded  # Invalid decoded value.
+        assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
         return decoded
 
 
@@ -132,7 +134,7 @@ class RandintVar(BaseVar):
     @cached_property
     def bounds(self) -> BoundsType:
         half_step = 0.5
-        return (next_float(self.lower - half_step), prev_float(self.upper + half_step)),
+        return ((next_float(self.lower - half_step), prev_float(self.upper + half_step)),)
         # Note: Using half_step allows uniform probability for boundary values of encoded range.
         # Note: Using next_float and prev_float prevent decoding a boundary value of encoded range to a decoded value outside the valid decoded range.
 
@@ -142,7 +144,7 @@ class RandintVar(BaseVar):
         assert self.bounds[0][0] <= encoded[0] <= self.bounds[0][1]  # Invalid encoded value.
         decoded = round(encoded[0])
         assert isinstance(decoded, int)
-        assert (self.lower <= decoded <= self.upper), decoded  # Invalid decoded value.
+        assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
         return decoded
 
 
@@ -162,7 +164,7 @@ class QrandintVar(BaseVar):
         quantized_upper = round_down(self.upper, self.quantum)
         assert self.lower <= quantized_lower <= quantized_upper <= self.upper
         assert self.quantum <= (quantized_upper - quantized_lower)
-        return (next_float(quantized_lower - half_step), prev_float(quantized_upper + half_step)),
+        return ((next_float(quantized_lower - half_step), prev_float(quantized_upper + half_step)),)
         # Note: Using half_step allows uniform probability for boundary values of encoded range.
         # Note: Using next_float and prev_float prevent decoding a boundary value of encoded range to a decoded value outside the valid decoded range.
 
@@ -172,7 +174,7 @@ class QrandintVar(BaseVar):
         assert self.bounds[0][0] <= encoded[0] <= self.bounds[0][1]  # Invalid encoded value.
         decoded = round_nearest(encoded[0], self.quantum)
         assert isinstance(decoded, int)
-        assert (self.lower <= decoded <= self.upper), decoded  # Invalid decoded value.
+        assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
         return decoded
 
 
@@ -230,8 +232,9 @@ class Vars:
         assert all(isinstance(var, BaseVar) for var in variables)
         self._variables = variables
         variable_lengths = [len(v) for v in self._variables]
-        self._variables_slices = {var: slice(tot_len - cur_len, tot_len) for var, cur_len, tot_len in
-                                  zip(self._variables, variable_lengths, itertools.accumulate(variable_lengths))}.items()
+        self._variables_slices = {
+            var: slice(tot_len - cur_len, tot_len) for var, cur_len, tot_len in zip(self._variables, variable_lengths, itertools.accumulate(variable_lengths))
+        }.items()
         self.decoded_len = len(self._variables)
         self.encoded_len = sum(variable_lengths)
 
