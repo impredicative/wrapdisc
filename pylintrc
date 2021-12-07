@@ -2,7 +2,7 @@
 jobs=0
 
 [BASIC]
-good-names=db,df,fn,KiB,log,MiB
+good-names=db,df,fn,KiB,log,MiB,to,q
 class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{2,60}|(__.*__))$
 function-rgx=([a-z_][a-z0-9_]{2,60}|test_[a-z0-9_]{2,90})$
 method-rgx=([a-z_][a-z0-9_]{2,60}|test_[a-z0-9_]{2,90})$
