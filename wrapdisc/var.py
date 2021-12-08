@@ -14,6 +14,7 @@ EncodingType = Sequence[Union[int, float]]
 class BaseVar(abc.ABC):
     """Abstract class for variable classes."""
 
+    @final
     @cache
     def __len__(self) -> int:
         """Return the length of an encoded solution."""
