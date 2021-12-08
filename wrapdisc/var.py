@@ -37,6 +37,38 @@ class BaseVar(abc.ABC):
         return encoded[0]
 
 
+class ChoiceVar(BaseVar):
+    """Category sampler."""
+
+    def __init__(self, categories: list[Any]):
+        """Sample a categorical value.
+
+        The one-max variation of one-hot encoding is used, such that the category with the max encoded value is sampled.
+        In the unlikely event that multiple categories share an encoded max value, the decoded value is the first of these categories in the order of the input.
+        """
+        # Motivational reference: https://docs.ray.io/en/latest/tune/api_docs/search_space.html#tune-choice
+        assert categories
+        self.categories = categories
+        num_categories = len(self.categories)
+        assert num_categories == len(set(self.categories))
+        self.encoding_len = 0 if (num_categories == 1) else num_categories
+        # Note: A boolean representation of a single encoded variable is intentionally not used if there are two categories.
+
+    @cached_property
+    def bounds(self) -> BoundsType:
+        return ((0.0, 1.0),) * self.encoding_len
+
+    def decode(self, encoded: EncodingType, /) -> Any:
+        assert len(encoded) == self.encoding_len
+        if self.encoding_len > 1:
+            assert all(isinstance(f, (float, int)) for f in encoded)
+            assert all((0.0 <= f <= 1.0) for f in encoded)
+            index = max(range(len(encoded)), key=encoded.__getitem__)
+            return self.categories[index]  # First category having max value is selected.
+        assert self.encoding_len == 0
+        return self.categories[0]
+
+
 class UniformVar(BaseVar):
     """Uniform float sampler."""
 
@@ -150,38 +182,6 @@ class QrandintVar(BaseVar):
         assert isinstance(decoded, int)
         assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
         return decoded
-
-
-class ChoiceVar(BaseVar):
-    """Category sampler."""
-
-    def __init__(self, categories: list[Any]):
-        """Sample a categorical value.
-
-        The one-max variation of one-hot encoding is used, such that the category with the max encoded value is sampled.
-        In the unlikely event that multiple categories share an encoded max value, the decoded value is the first of these categories in the order of the input.
-        """
-        # Motivational reference: https://docs.ray.io/en/latest/tune/api_docs/search_space.html#tune-choice
-        assert categories
-        self.categories = categories
-        num_categories = len(self.categories)
-        assert num_categories == len(set(self.categories))
-        self.encoding_len = 0 if (num_categories == 1) else num_categories
-        # Note: A boolean representation of a single encoded variable is intentionally not used if there are two categories.
-
-    @cached_property
-    def bounds(self) -> BoundsType:
-        return ((0.0, 1.0),) * self.encoding_len
-
-    def decode(self, encoded: EncodingType, /) -> Any:
-        assert len(encoded) == self.encoding_len
-        if self.encoding_len > 1:
-            assert all(isinstance(f, (float, int)) for f in encoded)
-            assert all((0.0 <= f <= 1.0) for f in encoded)
-            index = max(range(len(encoded)), key=encoded.__getitem__)
-            return self.categories[index]  # First category having max value is selected.
-        assert self.encoding_len == 0
-        return self.categories[0]
 
 
 class GridVar(BaseVar):
