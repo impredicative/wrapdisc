@@ -11,6 +11,7 @@ EncodingType = Sequence[int | float]
 
 class BaseVar(abc.ABC):
     """Abstract class for variable classes."""
+
     @cache
     def __len__(self) -> int:
         """Return the length of an encoded solution."""
