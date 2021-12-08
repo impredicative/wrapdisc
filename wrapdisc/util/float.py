@@ -1,3 +1,5 @@
+"""float utilities."""
+
 import math
 from typing import overload
 

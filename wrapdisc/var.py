@@ -1,3 +1,5 @@
+"""Various variable classes."""
+
 import abc
 from functools import cache, cached_property
 from typing import Any, Sequence
@@ -34,6 +36,8 @@ class BaseVar(abc.ABC):
 
 
 class UniformVar(BaseVar):
+    """Uniform float sampler."""
+
     def __init__(self, lower: float, upper: float):
         """Sample a float value uniformly between `lower` and `upper`."""
         # Motivational reference: https://docs.ray.io/en/latest/tune/api_docs/search_space.html#tune-uniform
@@ -54,6 +58,8 @@ class UniformVar(BaseVar):
 
 
 class QuniformVar(BaseVar):
+    """Uniform quantized float sampler."""
+
     def __init__(self, lower: float, upper: float, q: float):
         """Sample a float value uniformly between `lower` and `upper`, quantized to an integer multiple of `q`."""
         # Motivational reference: https://docs.ray.io/en/latest/tune/api_docs/search_space.html#tune-quniform
@@ -83,6 +89,8 @@ class QuniformVar(BaseVar):
 
 
 class RandintVar(BaseVar):
+    """Uniform integer sampler."""
+
     def __init__(self, lower: int, upper: int):
         """Sample an integer value uniformly between `lower` and `upper`, both inclusive.
 
@@ -111,6 +119,8 @@ class RandintVar(BaseVar):
 
 
 class QrandintVar(BaseVar):
+    """Uniform quantized integer sampler."""
+
     def __init__(self, lower: int, upper: int, q: int):
         """Sample an integer value uniformly between `lower` and `upper`, both inclusive, quantized to an integer multiple of `q`."""
         # Motivational reference: https://docs.ray.io/en/latest/tune/api_docs/search_space.html#tune-qrandint
@@ -141,6 +151,8 @@ class QrandintVar(BaseVar):
 
 
 class ChoiceVar(BaseVar):
+    """Category sampler."""
+
     def __init__(self, categories: list[Any]):
         """Sample a categorical value.
 
@@ -171,6 +183,8 @@ class ChoiceVar(BaseVar):
 
 
 class GridVar(BaseVar):
+    """Grid sampler."""
+
     def __init__(self, values: list[Any]):
         """Sample a grid uniformly."""
         # Motivational reference: https://docs.ray.io/en/latest/tune/api_docs/search_space.html#grid-search-api

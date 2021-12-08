@@ -1,4 +1,5 @@
-"""Package implementation."""
+"""Wrapped optimization objective callable."""
+
 import itertools
 from functools import _CacheInfo as CacheInfo
 from functools import cache
@@ -8,6 +9,8 @@ from wrapdisc.var import BaseVar, EncodingType
 
 
 class Vars:
+    """Solution decoder for multiple variables."""
+
     def __init__(self, variables: Sequence[BaseVar]):
         """Return a solution decoder for multiple variables."""
         assert all(isinstance(var, BaseVar) for var in variables)
@@ -28,6 +31,8 @@ class Vars:
 
 
 class Objective:
+    """Wrapped optimization objective callable."""
+
     def __init__(self, func: Callable, variables: Sequence[BaseVar]):
         """Return the wrapped optimization objective callable.
 
