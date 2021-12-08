@@ -48,9 +48,11 @@ class Objective:
         return self.vars[encoded]
 
     def __call__(self, *encoded: Any) -> float:
-        """Return the result from calling the objective function with the decoded solution from its encoded solution.
+        """Return the result from calling the objective function.
 
-        This method is the transformed optimization objective.
+        The given encoded solution is decoded. The original objective function is then called with the decoded solution.
+
+        This method makes the instance the transformed optimization objective.
         """
         return self.func(*self[encoded])
 
