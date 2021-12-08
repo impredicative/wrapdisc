@@ -21,10 +21,10 @@ class TestObjective(unittest.TestCase):
                 ChoiceVar([operator.add, operator.sub, operator.mul]),
                 ChoiceVar(["x"]),
                 GridVar([0.01, 0.1, 1, 10, 100]),
-                RandintVar(1, 10),
+                RandintVar(-8, 10),
                 QrandintVar(1, 10, 2),
                 UniformVar(1.2, 3.4),
-                QuniformVar(0.1, 9.99, 0.22),
+                QuniformVar(-11.1, 9.99, 0.22),
             ],
         )
 
@@ -34,10 +34,10 @@ class TestObjective(unittest.TestCase):
                 *(0.3, 0.8),  # ChoiceVar 1
                 *(0.11, 0.44, 0.33),  # ChoiceVar 2
                 0.0,  # GridVar
-                10.4999,  # RandintVar
+                -3.369,  # RandintVar
                 2.0,  # QrandintVar
                 1.909,  # UniformVar
-                0.111,  # QuniformVar
+                -11.09,  # QuniformVar
             )
         ]
         expected = (
@@ -45,9 +45,9 @@ class TestObjective(unittest.TestCase):
             operator.sub,  # ChoiceVar 2
             "x",  # ChoiceVar 3
             0.01,  # GridVar
-            10,  # RandintVar
+            -3,  # RandintVar
             2,  # QrandintVar
             1.909,  # UniformVar
-            0.22,  # QuniformVar
+            -11.0,  # QuniformVar
         )
         self.assertEqual(decoded, expected)
