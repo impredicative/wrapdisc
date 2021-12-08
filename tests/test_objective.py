@@ -1,4 +1,4 @@
-"""Test objective."""
+"""Test wrapped objective."""
 # pylint: disable=missing-class-docstring,missing-function-docstring
 import operator
 import unittest
@@ -28,19 +28,17 @@ class TestObjective(unittest.TestCase):
             ],
         )
 
-    def test_decoding(self):
-        decoded = self.objective[
-            (
-                *(0.3, 0.8),  # ChoiceVar 1
-                *(0.11, 0.44, 0.33),  # ChoiceVar 2
-                0.0,  # GridVar
-                -3.369,  # RandintVar
-                2.0,  # QrandintVar
-                1.909,  # UniformVar
-                -11.09,  # QuniformVar
-            )
-        ]
-        expected = (
+    def test_objective(self):
+        encoded = (
+            *(0.3, 0.8),  # ChoiceVar 1
+            *(0.11, 0.44, 0.33),  # ChoiceVar 2
+            0.0,  # GridVar
+            -3.369,  # RandintVar
+            2.0,  # QrandintVar
+            1.909,  # UniformVar
+            -11.09,  # QuniformVar
+        )
+        expected_decoded = (
             "bar",  # ChoiceVar 1
             operator.sub,  # ChoiceVar 2
             "x",  # ChoiceVar 3
@@ -50,4 +48,8 @@ class TestObjective(unittest.TestCase):
             1.909,  # UniformVar
             -11.0,  # QuniformVar
         )
-        self.assertEqual(decoded, expected)
+        actual_decoded = self.objective[encoded]
+        self.assertEqual(actual_decoded, expected_decoded)
+        self.assertEqual(self.objective(*encoded), _mixed_optimization_objective(*actual_decoded))
+        self.assertEqual(self.objective(*encoded), 44.0)
+        self.assertEqual(self.objective.cache_info._asdict(), {"currsize": 1, "hits": 1, "maxsize": None, "misses": 1})
