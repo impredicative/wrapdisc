@@ -2,13 +2,13 @@
 
 import abc
 from functools import cache, cached_property
-from typing import Any, Sequence, final
+from typing import Any, Sequence, Union, final
 
 from wrapdisc.util.float import next_float, prev_float, round_down, round_nearest, round_up
 
 BoundType = tuple[float, float]
-BoundsType = tuple[BoundType, ...]
-EncodingType = Sequence[int | float]
+BoundsType = Sequence[BoundType]
+EncodingType = Sequence[Union[int, float]]
 
 
 class BaseVar(abc.ABC):
