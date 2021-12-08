@@ -2,7 +2,7 @@
 
 import abc
 from functools import cache, cached_property
-from typing import Any, Sequence
+from typing import Any, Sequence, final
 
 from wrapdisc.util.float import next_float, prev_float, round_down, round_nearest, round_up
 
@@ -19,6 +19,7 @@ class BaseVar(abc.ABC):
         """Return the length of an encoded solution."""
         return len(self.bounds)
 
+    @final
     def __getitem__(self, encoded: EncodingType) -> Any:
         """Return the decoded solution from its encoded solution."""
         return self.decode(encoded)
