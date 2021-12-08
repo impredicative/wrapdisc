@@ -29,12 +29,12 @@ class BaseVar(abc.ABC):
     @abc.abstractmethod
     def bounds(self) -> BoundsType:
         """Return the encoded bounds to provide to an optimizer such as `scipy.optimize`."""
-        return ((0.0, 1.0),)
+        return ((0.0, 1.0),)  # pragma: no cover
 
     @abc.abstractmethod
     def decode(self, encoded: EncodingType, /) -> Any:
         """Return the decoded solution from its encoded solution."""
-        return encoded[0]
+        return encoded[0]  # pragma: no cover
 
 
 class ChoiceVar(BaseVar):

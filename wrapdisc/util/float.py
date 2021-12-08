@@ -16,12 +16,12 @@ def prev_float(val: float, /) -> float:
 
 @overload
 def round_nearest(num: float, to: int) -> int:
-    ...
+    pass
 
 
 @overload
 def round_nearest(num: float, to: float) -> float:
-    ...
+    pass
 
 
 def round_nearest(num, to):
