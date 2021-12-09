@@ -26,14 +26,14 @@ Python ≥3.10 is required. To install, run:
 ## Variables
 The following classes of variables are available:
 
-| Type       | Class       | Description                                                   | Example                                    |
-|------------|-------------|---------------------------------------------------------------|--------------------------------------------|
-| Discrete   | ChoiceVar   | Unordered categorical                                         | ["USA", "Panama", "Cayman"]                |
-| Discrete   | GridVar     | Ordinal (ordered categorical)                                 | [2, 4, 8, 16], ["good", "better", "best"]  |
-| Discrete   | RandintVar  | Integer from `lower` to `upper`, both inclusive               | `fn(3, 6)` -> [3, 4, 5, 6]                 |
-| Discrete   | QrandintVar | Quantized integer from `lower` to `upper` in multiples of `q` | `fn(2, 12, 3)` -> [3, 6, 9, 12]            |
-| Continuous | UniformVar  | Float from `lower` to `upper`                                 | `fn(0.2, 5.11)` -> [4.131, 1.52, 0.61319]  |
-| Continuous | QuniformVar | Quantized float from `lower` to `upper` in multiples of `q`   | `fn(0.2, 5.1, 0.3)` -> [[5.1, 0.8999, 3.9] |
+| Type       | Class           | Description                                                   | Example                                    |
+|------------|-----------------|---------------------------------------------------------------|--------------------------------------------|
+| Discrete   | **ChoiceVar**   | Unordered categorical                                         | ["USA", "Panama", "Cayman"]                |
+| Discrete   | **GridVar**     | Ordinal (ordered categorical)                                 | [2, 4, 8, 16], ["good", "better", "best"]  |
+| Discrete   | **RandintVar**  | Integer from `lower` to `upper`, both inclusive               | `fn(3, 6)` -> [3, 4, 5, 6]                 |
+| Discrete   | **QrandintVar** | Quantized integer from `lower` to `upper` in multiples of `q` | `fn(2, 12, 3)` -> [3, 6, 9, 12]            |
+| Continuous | **UniformVar**  | Float from `lower` to `upper`                                 | `fn(0.2, 5.11)` -> [4.131, 1.52, 0.61319]  |
+| Continuous | **QuniformVar** | Quantized float from `lower` to `upper` in multiples of `q`   | `fn(0.2, 5.1, 0.3)` -> [[5.1, 0.8999, 3.9] |
 
 ## Usage
 Example:
