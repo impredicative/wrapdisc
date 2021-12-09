@@ -188,10 +188,14 @@ class GridVar(BaseVar):
     """Grid sampler."""
 
     def __init__(self, values: list[Any]):
-        """Sample a grid uniformly."""
+        """Sample a grid uniformly.
+
+        `values` are expected to be ordered. They are not sorted by this class.
+        """
         # Motivational reference: https://docs.ray.io/en/latest/tune/api_docs/search_space.html#grid-search-api
         assert values
-        self.values = sorted(values)
+        # Note: values must not be explicitly sorted here in order to support pre-ordered strings, e.g. ["good", "better", "best"]
+        self.values = values
         assert len(self.values) == len(set(self.values))
         self.randint_var = RandintVar(0, len(values) - 1)
 
