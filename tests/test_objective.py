@@ -25,6 +25,7 @@ class TestObjective(unittest.TestCase):
                 QrandintVar(1, 10, 2),
                 UniformVar(1.2, 3.4),
                 QuniformVar(-11.1, 9.99, 0.22),
+                QuniformVar(4.6, 81.7, 0.2),
             ],
         )
 
@@ -37,6 +38,7 @@ class TestObjective(unittest.TestCase):
             2.0,  # QrandintVar
             1.909,  # UniformVar
             -11.09,  # QuniformVar
+            76.55,  # QuinformVar  (required for test coverage of `round_up`)
         )
         expected_decoded = (
             "bar",  # ChoiceVar 1
@@ -47,9 +49,10 @@ class TestObjective(unittest.TestCase):
             2,  # QrandintVar
             1.909,  # UniformVar
             -11.0,  # QuniformVar
+            76.60000000000001,  # QuniformVar  (!= 76.6 due to floating point limitation in `round_up`)
         )
         actual_decoded = self.objective[encoded]
         self.assertEqual(actual_decoded, expected_decoded)
         self.assertEqual(self.objective(*encoded), _mixed_optimization_objective(*actual_decoded))
-        self.assertEqual(self.objective(*encoded), 44.0)
+        self.assertEqual(self.objective(*encoded), 61.0)
         self.assertEqual(self.objective.cache_info._asdict(), {"currsize": 1, "hits": 1, "maxsize": None, "misses": 1})
