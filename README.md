@@ -35,7 +35,7 @@ from wrapdisc.var import ChoiceVar, GridVar, QrandintVar, QuniformVar, RandintVa
 def your_mixed_optimization_objective(x: tuple) -> float:
     return float(sum(x_i if isinstance(x_i, (int, float)) else len(str(x_i)) for x_i in x))
 
-wrapped_optimization_objective = Objective(
+wrapped_objective = Objective(
             your_mixed_optimization_objective,
             [
                 ChoiceVar(["foobar", "baz"]),
@@ -50,14 +50,14 @@ wrapped_optimization_objective = Objective(
             ],
         )
 
-result = scipy.optimize.differential_evolution(wrapped_optimization_objective, wrapped_optimization_objective.bounds, seed=0)
+result = scipy.optimize.differential_evolution(wrapped_objective, wrapped_objective.bounds, seed=0)
 encoded_solution = result.x
-decoded_solution = wrapped_optimization_objective[encoded_solution]
+decoded_solution = wrapped_objective[encoded_solution]
 ```
 
 Output:
 ```python
->>> wrapped_optimization_objective.bounds
+>>> wrapped_objective.bounds
 ((0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (-0.49999999999999994, 4.499999999999999), (-8.499999999999998, 10.499999999999998), (1.0000000000000002, 10.999999999999998), (1.2, 3.4), (-11.109999999999998, 10.009999999999998), (4.500000000000001, 81.69999999999999))
 
 >>> result
@@ -76,6 +76,6 @@ Output:
 >>> decoded_solution
 ("baz", operator.add, "x", 0.01, -8, 2, 1.2, -11.0, 4.6000000000000005)
 
->>> wrapped_optimization_objective.cache_info
+>>> wrapped_objective.cache_info
 CacheInfo(hits=135, misses=9129, maxsize=None, currsize=9129)
 ```
