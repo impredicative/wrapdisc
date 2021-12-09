@@ -52,14 +52,13 @@ wrapped_objective = Objective(
             your_mixed_optimization_objective,
             [
                 ChoiceVar(["foobar", "baz"]),
-                ChoiceVar([operator.add, operator.sub, operator.mul]),
-                ChoiceVar(["x"]),
+                ChoiceVar([operator.index, abs, operator.invert]),
                 GridVar([0.01, 0.1, 1, 10, 100]),
+                GridVar(["disagreed", "neutral", "agreed"]),
                 RandintVar(-8, 10),
                 QrandintVar(1, 10, 2),
                 UniformVar(1.2, 3.4),
                 QuniformVar(-11.1, 9.99, 0.22),
-                QuniformVar(4.6, 81.7, 0.2),
             ],
         )
 
@@ -71,24 +70,24 @@ decoded_solution = wrapped_objective[encoded_solution]
 Output:
 ```python
 >>> wrapped_objective.bounds
-((0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (-0.49999999999999994, 4.499999999999999), (-8.499999999999998, 10.499999999999998), (1.0000000000000002, 10.999999999999998), (1.2, 3.4), (-11.109999999999998, 10.009999999999998), (4.500000000000001, 81.69999999999999))
+((0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (-0.49999999999999994, 4.499999999999999), (-0.49999999999999994, 2.4999999999999996), (-8.499999999999998, 10.499999999999998), (1.0000000000000002, 10.999999999999998), (1.2, 3.4), (-11.109999999999998, 10.009999999999998))
 
 >>> result
-     fun: 15.810000000000002
+     fun: 16.210000000000004
      jac: array([0.        , 0.        , 0.        , 0.        , 0.        ,
-       0.        , 0.        , 0.        , 1.00000009, 0.        ,
+       0.        , 0.        , 0.        , 0.        , 1.00000009,
        0.        ])
  message: 'Optimization terminated successfully.'
-    nfev: 9264
-     nit: 55
+    nfev: 7284
+     nit: 43
  success: True
-       x: array([  0.32091421,   0.64403109,   0.92827817,   0.18718745,
-         0.76108352,   0.32380381,  -7.60064697,   2.12231176,
-         1.2       , -11.03958486,   4.69462919])
+       x: array([  0.29493233,   0.88254257,   0.12721268,   0.48978776,
+         0.39078759,  -0.04540115,   1.87464003,  -8.02943494,
+         1.02999311,   1.2       , -10.98560722])
 
 >>> decoded_solution
-("baz", operator.add, "x", 0.01, -8, 2, 1.2, -11.0, 4.6000000000000005)
+('baz', <built-in function abs>, 0.01, 'agreed', -8, 2, 1.2, -11.0)
 
 >>> wrapped_objective.cache_info
-CacheInfo(hits=135, misses=9129, maxsize=None, currsize=9129)
+CacheInfo(hits=217, misses=7067, maxsize=None, currsize=7067)
 ```
