@@ -3,7 +3,7 @@
 import itertools
 from functools import _CacheInfo as CacheInfo
 from functools import cache, cached_property
-from typing import Any, Callable, Sequence
+from typing import Callable, Sequence
 
 from wrapdisc.var import BaseVar, BoundsType, EncodingType
 
@@ -38,7 +38,7 @@ class Vars:
 class Objective:
     """Wrapped optimization objective callable."""
 
-    def __init__(self, func: Callable, variables: Sequence[BaseVar]):
+    def __init__(self, func: Callable[[tuple], float], variables: Sequence[BaseVar]):
         """Return the wrapped optimization objective callable.
 
         An unbounded in-memory cache is used over the given input function. This is essential for preventing redundant calls to the input function.
@@ -52,14 +52,14 @@ class Objective:
         """Return the decoded solution from its encoded solution."""
         return self.vars[encoded]
 
-    def __call__(self, *encoded: Any) -> float:
+    def __call__(self, encoded: EncodingType) -> float:
         """Return the result from calling the objective function.
 
         The given encoded solution is decoded. The original objective function is then called with the decoded solution.
 
         This method makes the instance the transformed optimization objective.
         """
-        return self.func(*self[encoded])
+        return self.func(self[encoded])
 
     @property
     def bounds(self) -> BoundsType:

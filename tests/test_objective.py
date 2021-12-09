@@ -8,8 +8,8 @@ from wrapdisc.var import ChoiceVar, GridVar, QrandintVar, QuniformVar, RandintVa
 from wrapdisc.wrapdisc import Objective
 
 
-def _mixed_optimization_objective(*args: Any) -> float:
-    return float(sum(len(str(a)) for a in args))
+def _mixed_optimization_objective(x: tuple) -> float:
+    return float(sum(len(str(a)) for a in x))
 
 
 class TestObjective(unittest.TestCase):
@@ -69,8 +69,8 @@ class TestObjective(unittest.TestCase):
         self.assertEqual(actual_decoded, expected_decoded)
 
         # Test function
-        self.assertEqual(self.objective(*encoded), _mixed_optimization_objective(*actual_decoded))
-        self.assertEqual(self.objective(*encoded), 61.0)
+        self.assertEqual(self.objective(encoded), _mixed_optimization_objective(actual_decoded))
+        self.assertEqual(self.objective(encoded), 61.0)
 
         # Test cache
         self.assertEqual(self.objective.cache_info._asdict(), {"currsize": 1, "hits": 1, "maxsize": None, "misses": 1})
