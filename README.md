@@ -6,6 +6,12 @@ Both discrete and continuous variables are supported, and are motivated by [Ray 
 
 [![cicd badge](https://github.com/impredicative/wrapdisc/workflows/cicd/badge.svg?branch=master)](https://github.com/impredicative/wrapdisc/actions?query=workflow%3Acicd+branch%3Amaster)
 
+## Limitations
+The current implementation has these limitations:
+* Additional fixed parameters needed by the objective function are not supported.
+* The wrapped objective function cannot be pickled, and so multiple workers cannot be used for optimization.
+* An unbounded in-memory cache is used over the original objective function, imposing a memory requirement.
+
 ## Links
 | Caption   | Link                                               |
 |-----------|----------------------------------------------------|
@@ -74,8 +80,3 @@ Output:
 >>> wrapped_optimization_objective.cache_info
 CacheInfo(hits=135, misses=9129, maxsize=None, currsize=9129)
 ```
-
-## Limitations
-The current implementation has these limitations:
-* Additional fixed parameters needed by the objective function are not supported.
-* The wrapped objective function cannot be pickled, and so multiple workers cannot be used for optimization.
