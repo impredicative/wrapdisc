@@ -26,14 +26,14 @@ Python ≥3.10 is required. To install, run:
 ## Variables
 The following classes of variables are available:
 
-| Type       | Class             | Description                                                   | Example                                   |
-|------------|-------------------|---------------------------------------------------------------|-------------------------------------------|
-| Discrete   | **_ChoiceVar_**   | Unordered categorical                                         | ["USA", "Panama", "Cayman"]               |
-| Discrete   | **_GridVar_**     | Ordinal (ordered categorical)                                 | [2, 4, 8, 16], ["good", "better", "best"] |
-| Discrete   | **_RandintVar_**  | Integer from `lower` to `upper`, both inclusive               | `fn(3, 6)` -> [3, 4, 5, 6]                |
-| Discrete   | **_QrandintVar_** | Quantized integer from `lower` to `upper` in multiples of `q` | `fn(2, 12, 3)` -> [3, 6, 9, 12]           |
-| Continuous | **_UniformVar_**  | Float from `lower` to `upper`                                 | `fn(0.2, 5.11)` -> [4.131, 1.52, 0.61319] |
-| Continuous | **_QuniformVar_** | Quantized float from `lower` to `upper` in multiples of `q`   | `fn(0.2, 5.1, 0.3)` -> [5.1, 0.8999, 3.9] |
+| Type       | Usage                              | Description                                                   | Usage examples                                    |
+|------------|------------------------------------|---------------------------------------------------------------|---------------------------------------------------|
+| Discrete   | _**ChoiceVar**(items)_             | Unordered categorical                                         | fn(["USA", "Panama", "Cayman"])                   |
+| Discrete   | _**GridVar**(items)_               | Ordinal (ordered categorical)                                 | fn([2, 4, 8, 16]), fn(["good", "better", "best"]) |
+| Discrete   | _**RandintVar**(lower, upper)_     | Integer from `lower` to `upper`, both inclusive               | fn(0, 6), fn(3, 9), fn(-10, 10)                   |
+| Discrete   | _**QrandintVar**(lower, upper, q)_ | Quantized integer from `lower` to `upper` in multiples of `q` | fn(0, 12, 3), fn(1, 10, 2), fn(-10, 10, 4)        |
+| Continuous | _**UniformVar**(lower, upper)_     | Float from `lower` to `upper`                                 | fn(0.0, 5.11), fn(0.2, 4.6), fn(-10.0, 10.0)      |
+| Continuous | _**QuniformVar**(lower, upper, q)_ | Quantized float from `lower` to `upper` in multiples of `q`   | fn(0.0, 5.1, 0.3), fn(-5.1, -0.2, 0.3)            |
 
 ## Usage
 Example:
