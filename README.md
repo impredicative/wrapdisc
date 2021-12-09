@@ -24,6 +24,7 @@ Python ≥3.10 is required. To install, run:
     pip install wrapdisc
 
 ## Usage
+Example:
 ```python
 import operator
 
