@@ -65,14 +65,13 @@ wrapped_objective = Objective(
 result = scipy.optimize.differential_evolution(wrapped_objective, wrapped_objective.bounds, seed=0)
 encoded_solution = result.x
 decoded_solution = wrapped_objective[encoded_solution]
-assert result.fun == your_mixed_optimization_objective(decoded_solution)
+assert result.fun == wrapped_objective(encoded_solution) == your_mixed_optimization_objective(decoded_solution)
 ```
 
 Output:
 ```python
 >>> wrapped_objective.bounds
 ((0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (-0.49999999999999994, 4.499999999999999), (-0.49999999999999994, 2.4999999999999996), (-8.499999999999998, 10.499999999999998), (1.0000000000000002, 10.999999999999998), (1.2, 3.4), (-11.109999999999998, 10.009999999999998))
-
 >>> result
      fun: 16.210000000000004
      jac: array([0.        , 0.        , 0.        , 0.        , 0.        ,
@@ -88,6 +87,8 @@ Output:
 
 >>> decoded_solution
 ('baz', <built-in function abs>, 0.01, 'agreed', -8, 2, 1.2, -11.0)
+>>> your_mixed_optimization_objective(decoded_solution)
+16.210000000000004
 
 >>> wrapped_objective.cache_info
 CacheInfo(hits=217, misses=7067, maxsize=None, currsize=7067)
