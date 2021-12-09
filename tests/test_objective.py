@@ -11,7 +11,6 @@ from wrapdisc.wrapdisc import Objective
 
 def _mixed_optimization_objective(x: tuple) -> float:  # pylint: disable=invalid-name
     return float(sum(x_i if isinstance(x_i, (int, float)) else len(str(x_i)) for x_i in x))
-    # return float(sum(len(str(a)) for a in x))
 
 
 class TestObjective(unittest.TestCase):
