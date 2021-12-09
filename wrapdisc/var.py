@@ -94,7 +94,7 @@ class UniformVar(BaseVar):
 class QuniformVar(BaseVar):
     """Uniform quantized float sampler."""
 
-    def __init__(self, lower: float, upper: float, q: float):
+    def __init__(self, lower: float, upper: float, q: float):  # pylint: disable=invalid-name
         """Sample a float value uniformly between `lower` and `upper`, quantized to an integer multiple of `q`."""
         # Motivational reference: https://docs.ray.io/en/latest/tune/api_docs/search_space.html#tune-quniform
         self.lower, self.upper, self.quantum = float(lower), float(upper), float(q)
@@ -155,7 +155,7 @@ class RandintVar(BaseVar):
 class QrandintVar(BaseVar):
     """Uniform quantized integer sampler."""
 
-    def __init__(self, lower: int, upper: int, q: int):
+    def __init__(self, lower: int, upper: int, q: int):  # pylint: disable=invalid-name
         """Sample an integer value uniformly between `lower` and `upper`, both inclusive, quantized to an integer multiple of `q`."""
         # Motivational reference: https://docs.ray.io/en/latest/tune/api_docs/search_space.html#tune-qrandint
         assert all(isinstance(arg, int) for arg in (lower, upper, q))
