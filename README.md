@@ -24,8 +24,8 @@ import operator
 
 import scipy.optimize
 
+from wrapdisc import Objective
 from wrapdisc.var import ChoiceVar, GridVar, QrandintVar, QuniformVar, RandintVar, UniformVar
-from wrapdisc.wrapdisc import Objective
 
 def your_mixed_optimization_objective(x: tuple) -> float:
     return float(sum(x_i if isinstance(x_i, (int, float)) else len(str(x_i)) for x_i in x))

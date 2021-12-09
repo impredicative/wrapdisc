@@ -5,8 +5,8 @@ import unittest
 
 import scipy.optimize
 
+from wrapdisc import Objective
 from wrapdisc.var import ChoiceVar, GridVar, QrandintVar, QuniformVar, RandintVar, UniformVar
-from wrapdisc.wrapdisc import Objective
 
 
 def _mixed_optimization_objective(x: tuple) -> float:  # pylint: disable=invalid-name
