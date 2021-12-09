@@ -26,7 +26,7 @@ Python ≥3.10 is required. To install, run:
 ## Variables
 The following classes of variables are available:
 
-| Space      | Usage                              | Description                                                   | Usage examples                                           |
+| Space      | Usage                              | Description                                                   | Examples                                                 |
 |------------|------------------------------------|---------------------------------------------------------------|----------------------------------------------------------|
 | Discrete   | _**ChoiceVar**(items)_             | Unordered categorical                                         | • fn(["USA", "Panama", "Cayman"])                        |
 | Discrete   | _**GridVar**(values)_              | Ordinal (ordered categorical)                                 | • fn([2, 4, 8, 16])<br/>• fn(["good", "better", "best"]) |
