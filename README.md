@@ -26,14 +26,14 @@ Python ≥3.10 is required. To install, run:
 ## Variables
 The following classes of variables are available:
 
-| Type       | Usage                              | Description                                                   | Usage examples                                              |
-|------------|------------------------------------|---------------------------------------------------------------|-------------------------------------------------------------|
-| Discrete   | _**ChoiceVar**(items)_             | Unordered categorical                                         | • fn(["USA", "Panama", "Cayman"])                           |
-| Discrete   | _**GridVar**(items)_               | Ordinal (ordered categorical)                                 | • fn([2, 4, 8, 16])<br/>• fn(["good", "better", "best"])    |
-| Discrete   | _**RandintVar**(lower, upper)_     | Integer from `lower` to `upper`, both inclusive               | • fn(0, 6)<br/> • fn(3, 9)<br/> • fn(-10, 10)               |
-| Discrete   | _**QrandintVar**(lower, upper, q)_ | Quantized integer from `lower` to `upper` in multiples of `q` | • fn(0, 12, 3)<br/> • fn(1, 10, 2)<br/> • fn(-10, 10, 4)    |
-| Continuous | _**UniformVar**(lower, upper)_     | Float from `lower` to `upper`                                 | • fn(0.0, 5.11)<br/> • fn(0.2, 4.6)<br/> • fn(-10.0, 10.0)  |
-| Continuous | _**QuniformVar**(lower, upper, q)_ | Quantized float from `lower` to `upper` in multiples of `q`   | • fn(0.0, 5.1, 0.3)<br/> • fn(-5.1, -0.2, 0.3)              |
+| Type       | Usage                              | Description                                                   | Usage examples                                        |
+|------------|------------------------------------|---------------------------------------------------------------|-------------------------------------------------------|
+| Discrete   | _**ChoiceVar**(items)_             | Unordered categorical                                         | • fn(["USA", "Panama", "Cayman"])                     |
+| Discrete   | _**GridVar**(items)_               | Ordinal (ordered categorical)                                 | • fn([2, 4, 8, 16])<br/>• fn(["good", "better", "best"]) |
+| Discrete   | _**RandintVar**(lower, upper)_     | Integer from `lower` to `upper`, both inclusive               | • fn(0, 6)<br/>• fn(3, 9)<br/>• fn(-10, 10)           |
+| Discrete   | _**QrandintVar**(lower, upper, q)_ | Quantized integer from `lower` to `upper` in multiples of `q` | • fn(0, 12, 3)<br/>• fn(1, 10, 2)<br/>• fn(-10, 10, 4) |
+| Continuous | _**UniformVar**(lower, upper)_     | Float from `lower` to `upper`                                 | • fn(0.0, 5.11)<br/>• fn(0.2, 4.6)<br/>• fn(-10.0, 10.0) |
+| Continuous | _**QuniformVar**(lower, upper, q)_ | Quantized float from `lower` to `upper` in multiples of `q`   | • fn(0.0, 5.1, 0.3)<br/>• fn(-5.1, -0.2, 0.3)         |
 
 ## Usage
 Example:
