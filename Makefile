@@ -25,5 +25,5 @@ setup: install test
 
 test:
 	black --check .
-	vulture --make-whitelist . ./vulture.txt
+	vulture --exclude venv/ --make-whitelist . ./vulture.txt
 	pytest -v
