@@ -1,6 +1,6 @@
 # wrapdisc
 **wrapdisc** is a Python 3.10 package to wrap a discrete optimization objective such that it can be optimized by a continuous optimizer such as [`scipy.optimize`](https://docs.scipy.org/doc/scipy/reference/optimize.html).
-It does this by mapping the discrete variables into a continuous space, and using an in-memory cache over the discrete space.
+It maps the discrete variables into a continuous space, and uses an in-memory cache over the discrete space.
 Both discrete and continuous variables are supported, and are motivated by [Ray Tune's search spaces](https://docs.ray.io/en/latest/tune/key-concepts.html#search-spaces).
 
 [![cicd badge](https://github.com/impredicative/wrapdisc/workflows/cicd/badge.svg?branch=master)](https://github.com/impredicative/wrapdisc/actions?query=workflow%3Acicd+branch%3Amaster)
