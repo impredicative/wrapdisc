@@ -65,7 +65,8 @@ wrapped_objective = Objective(
 result = scipy.optimize.differential_evolution(wrapped_objective, wrapped_objective.bounds, seed=0)
 encoded_solution = result.x
 decoded_solution = wrapped_objective[encoded_solution]
-assert result.fun == wrapped_objective(encoded_solution) == your_mixed_optimization_objective(decoded_solution)
+assert result.fun == wrapped_objective(encoded_solution)
+assert result.fun == your_mixed_optimization_objective(decoded_solution)
 ```
 
 Output:
