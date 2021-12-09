@@ -2,10 +2,10 @@
 
 import itertools
 from functools import _CacheInfo as CacheInfo
-from functools import cache
+from functools import cache, cached_property
 from typing import Any, Callable, Sequence
 
-from wrapdisc.var import BaseVar, EncodingType
+from wrapdisc.var import BaseVar, BoundsType, EncodingType
 
 
 class Vars:
@@ -28,6 +28,11 @@ class Vars:
         decoded = tuple(var[encoded[var_slice]] for var, var_slice in self._variables_slices)
         assert len(decoded) == self.decoded_len
         return decoded
+
+    @cached_property
+    def bounds(self) -> BoundsType:
+        """Return the encoded bounds to provide to an optimizer such as `scipy.optimize`."""
+        return tuple(itertools.chain(*(v.bounds for v in self._variables)))
 
 
 class Objective:
@@ -55,6 +60,11 @@ class Objective:
         This method makes the instance the transformed optimization objective.
         """
         return self.func(*self[encoded])
+
+    @property
+    def bounds(self) -> BoundsType:
+        """Return the encoded bounds to provide to an optimizer such as `scipy.optimize`."""
+        return self.vars.bounds
 
     @property
     def cache_info(self) -> CacheInfo:

@@ -30,6 +30,20 @@ class TestObjective(unittest.TestCase):
         )
 
     def test_objective(self):
+        # Test bounds
+        expected_bounds = (
+            *((0.0, 1.0), (0.0, 1.0)),  # ChoiceVar 1
+            *((0.0, 1.0), (0.0, 1.0), (0.0, 1.0)),  # ChoiceVar 2
+            (-0.49999999999999994, 4.499999999999999),  # GridVar
+            (-8.499999999999998, 10.499999999999998),  # RandintVar
+            (1.0000000000000002, 10.999999999999998),  # QrandintVar
+            (1.2, 3.4),  # UniformVar
+            (-11.109999999999998, 10.009999999999998),  # QuniformVar
+            (4.500000000000001, 81.69999999999999),  # QuniformVar
+        )
+        self.assertEqual(self.objective.bounds, expected_bounds)
+
+        # Test decoding
         encoded = (
             *(0.3, 0.8),  # ChoiceVar 1
             *(0.11, 0.44, 0.33),  # ChoiceVar 2
@@ -53,6 +67,10 @@ class TestObjective(unittest.TestCase):
         )
         actual_decoded = self.objective[encoded]
         self.assertEqual(actual_decoded, expected_decoded)
+
+        # Test function
         self.assertEqual(self.objective(*encoded), _mixed_optimization_objective(*actual_decoded))
         self.assertEqual(self.objective(*encoded), 61.0)
+
+        # Test cache
         self.assertEqual(self.objective.cache_info._asdict(), {"currsize": 1, "hits": 1, "maxsize": None, "misses": 1})
