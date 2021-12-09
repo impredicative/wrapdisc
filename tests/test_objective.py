@@ -19,9 +19,10 @@ class TestObjective(unittest.TestCase):
             _mixed_optimization_objective,
             [
                 ChoiceVar(["foobar", "baz"]),
-                ChoiceVar([operator.add, operator.sub, operator.mul]),
+                ChoiceVar([operator.index, abs, operator.invert]),
                 ChoiceVar(["x"]),
                 GridVar([0.01, 0.1, 1, 10, 100]),
+                GridVar(["good", "better", "best"]),
                 RandintVar(-8, 10),
                 QrandintVar(1, 10, 2),
                 UniformVar(1.2, 3.4),
@@ -35,7 +36,8 @@ class TestObjective(unittest.TestCase):
         expected_bounds = (
             *((0.0, 1.0), (0.0, 1.0)),  # ChoiceVar 1
             *((0.0, 1.0), (0.0, 1.0), (0.0, 1.0)),  # ChoiceVar 2
-            (-0.49999999999999994, 4.499999999999999),  # GridVar
+            (-0.49999999999999994, 4.499999999999999),  # GridVar 1
+            (-0.49999999999999994, 2.4999999999999996),  # GridVar 2
             (-8.499999999999998, 10.499999999999998),  # RandintVar
             (1.0000000000000002, 10.999999999999998),  # QrandintVar
             (1.2, 3.4),  # UniformVar
@@ -48,7 +50,8 @@ class TestObjective(unittest.TestCase):
         encoded = (
             *(0.3, 0.8),  # ChoiceVar 1
             *(0.11, 0.44, 0.33),  # ChoiceVar 2
-            0.0,  # GridVar
+            0.0,  # GridVar 1
+            2.499,  # GridVar 2
             -3.369,  # RandintVar
             2.0,  # QrandintVar
             1.909,  # UniformVar
@@ -57,9 +60,10 @@ class TestObjective(unittest.TestCase):
         )
         expected_decoded = (
             "baz",  # ChoiceVar 1
-            operator.sub,  # ChoiceVar 2
+            abs,  # ChoiceVar 2
             "x",  # ChoiceVar 3
-            0.01,  # GridVar
+            0.01,  # GridVar 1
+            "best",  # GridVar 2
             -3,  # RandintVar
             2,  # QrandintVar
             1.909,  # UniformVar
@@ -71,7 +75,7 @@ class TestObjective(unittest.TestCase):
 
         # Test function
         self.assertEqual(self.objective(encoded), _mixed_optimization_objective(actual_decoded))
-        self.assertEqual(self.objective(encoded), 93.519)
+        self.assertEqual(self.objective(encoded), 97.519)
 
         # Test cache
         self.assertEqual(self.objective.cache_info._asdict(), {"currsize": 1, "hits": 1, "maxsize": None, "misses": 1})
@@ -79,12 +83,12 @@ class TestObjective(unittest.TestCase):
     def test_minimize(self):
         # Test result
         result = scipy.optimize.differential_evolution(self.objective, self.objective.bounds, seed=0)
-        self.assertLessEqual(result.fun, 15.810000000000002)
+        self.assertIsInstance(result.fun, float)
 
         # Test solution
         encoded_solution = result.x
         decoded_solution = self.objective[encoded_solution]
-        expected_decoded_solution = ("baz", operator.add, "x", 0.01, -8, 2, 1.2, -11.0, 4.6000000000000005)
+        expected_decoded_solution = ("baz", abs, "x", 0.01, "good", -8, 2, 1.2, -11.0, 4.6000000000000005)
         self.assertEqual(decoded_solution, expected_decoded_solution)
 
         # Test cache
