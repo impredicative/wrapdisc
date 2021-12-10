@@ -3,7 +3,7 @@
 import itertools
 from functools import _CacheInfo as CacheInfo
 from functools import cache, cached_property
-from typing import Callable, Sequence
+from typing import Any, Callable, Sequence
 
 from wrapdisc.var import BaseVar, BoundsType, EncodingType
 
@@ -52,14 +52,15 @@ class Objective:
         """Return the decoded solution from its encoded solution."""
         return self.vars[encoded]
 
-    def __call__(self, encoded: EncodingType) -> float:
+    def __call__(self, encoded: EncodingType, *args: Any) -> float:
         """Return the result from calling the objective function.
 
-        The given encoded solution is decoded. The original objective function is then called with the decoded solution.
-
         This method makes the instance the transformed optimization objective.
+
+        :param encoded: This is the encoded solution which first gets decoded. The original objective function is then called with the decoded solution.
+        :param args: Additional positional parameters, if any, that are given to the objective function.
         """
-        return self.func(self[encoded])
+        return self.func(self[encoded], *args)
 
     @property
     def bounds(self) -> BoundsType:

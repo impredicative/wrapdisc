@@ -7,7 +7,6 @@ Both discrete and continuous variables are supported, and are motivated by [Ray 
 
 ## Limitations
 The current implementation has these limitations:
-* Additional fixed parameters needed by the objective function are not supported.
 * The wrapped objective function cannot be pickled, and so multiple workers cannot be used for optimization.
 * An unbounded in-memory cache is used over the original objective function, imposing a memory requirement.
 
@@ -39,14 +38,15 @@ The following classes of variables are available:
 Example:
 ```python
 import operator
+from typing import Any
 
 import scipy.optimize
 
 from wrapdisc import Objective
 from wrapdisc.var import ChoiceVar, GridVar, QrandintVar, QuniformVar, RandintVar, UniformVar
 
-def your_mixed_optimization_objective(x: tuple) -> float:
-    return float(sum(x_i if isinstance(x_i, (int, float)) else len(str(x_i)) for x_i in x))
+def your_mixed_optimization_objective(x: tuple, *args: Any) -> float:
+    return float(sum(x_i if isinstance(x_i, (int, float)) else len(str(x_i)) for x_i in (*x, *args)))
 
 wrapped_objective = Objective(
             your_mixed_optimization_objective,
@@ -62,11 +62,13 @@ wrapped_objective = Objective(
             ],
         )
 
-result = scipy.optimize.differential_evolution(wrapped_objective, wrapped_objective.bounds, seed=0)
+optional_fixed_args = ("arg1", 2, 3.0)
+result = scipy.optimize.differential_evolution(wrapped_objective, wrapped_objective.bounds, args=optional_fixed_args, seed=0)
+cache_usage = wrapped_objective.cache_info
 encoded_solution = result.x
 decoded_solution = wrapped_objective[encoded_solution]
-assert result.fun == wrapped_objective(encoded_solution)
-assert result.fun == your_mixed_optimization_objective(decoded_solution)
+assert result.fun == wrapped_objective(encoded_solution, *optional_fixed_args)
+assert result.fun == your_mixed_optimization_objective(decoded_solution, *optional_fixed_args)
 ```
 
 Output:
@@ -74,13 +76,13 @@ Output:
 >>> wrapped_objective.bounds
 ((0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (-0.49999999999999994, 4.499999999999999), (-0.49999999999999994, 2.4999999999999996), (-8.499999999999998, 10.499999999999998), (1.0000000000000002, 10.999999999999998), (1.2, 3.4), (-11.109999999999998, 10.009999999999998))
 >>> result
-     fun: 16.210000000000004
+     fun: 25.210000000000004
      jac: array([0.        , 0.        , 0.        , 0.        , 0.        ,
        0.        , 0.        , 0.        , 0.        , 1.00000009,
        0.        ])
  message: 'Optimization terminated successfully.'
-    nfev: 7284
-     nit: 43
+    nfev: 6789
+     nit: 40
  success: True
        x: array([  0.29493233,   0.88254257,   0.12721268,   0.48978776,
          0.39078759,  -0.04540115,   1.87464003,  -8.02943494,
@@ -88,9 +90,9 @@ Output:
 
 >>> decoded_solution
 ('baz', <built-in function abs>, 0.01, 'agreed', -8, 2, 1.2, -11.0)
->>> your_mixed_optimization_objective(decoded_solution)
-16.210000000000004
+>>> your_mixed_optimization_objective(decoded_solution, *optional_fixed_args)
+25.210000000000004
 
->>> wrapped_objective.cache_info
-CacheInfo(hits=217, misses=7067, maxsize=None, currsize=7067)
+>>> cache_usage
+CacheInfo(hits=169, misses=6620, maxsize=None, currsize=6620)
 ```

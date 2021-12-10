@@ -2,6 +2,7 @@
 # pylint: disable=missing-class-docstring,missing-function-docstring
 import operator
 import unittest
+from typing import Any
 
 import scipy.optimize
 
@@ -9,8 +10,8 @@ from wrapdisc import Objective
 from wrapdisc.var import ChoiceVar, GridVar, QrandintVar, QuniformVar, RandintVar, UniformVar
 
 
-def _mixed_optimization_objective(x: tuple) -> float:  # pylint: disable=invalid-name
-    return float(sum(x_i if isinstance(x_i, (int, float)) else len(str(x_i)) for x_i in x))
+def _mixed_optimization_objective(x: tuple, *args: Any) -> float:  # pylint: disable=invalid-name
+    return float(sum(x_i if isinstance(x_i, (int, float)) else len(str(x_i)) for x_i in (*x, *args)))
 
 
 class TestObjective(unittest.TestCase):
@@ -88,11 +89,32 @@ class TestObjective(unittest.TestCase):
         # Test solution
         encoded_solution = result.x
         decoded_solution = self.objective[encoded_solution]
+        cache_info = self.objective.cache_info
         expected_decoded_solution = ("baz", abs, "x", 0.01, "good", -8, 2, 1.2, -11.0, 4.6000000000000005)
         self.assertEqual(decoded_solution, expected_decoded_solution)
+        self.assertEqual(result.fun, self.objective(encoded_solution))
+        self.assertEqual(result.fun, _mixed_optimization_objective(decoded_solution))
 
         # Test cache
+        self.assertGreaterEqual(cache_info.hits, 1)
+        expected_nfev = cache_info.currsize + cache_info.hits
+        self.assertEqual(result.nfev, expected_nfev)
+
+    def test_minimize_with_fixed_args(self):
+        fixed_args = ("arg1", 2, 3.0)
+        result = scipy.optimize.differential_evolution(self.objective, bounds=self.objective.bounds, args=fixed_args, seed=0)
+        self.assertIsInstance(result.fun, float)
+
+        # Test solution
+        encoded_solution = result.x
+        decoded_solution = self.objective[encoded_solution]
         cache_info = self.objective.cache_info
+        expected_decoded_solution = ("baz", abs, "x", 0.01, "good", -8, 2, 1.2, -11.0, 4.6000000000000005)
+        self.assertEqual(decoded_solution, expected_decoded_solution)
+        self.assertEqual(result.fun, self.objective(encoded_solution, *fixed_args))
+        self.assertEqual(result.fun, _mixed_optimization_objective(decoded_solution, *fixed_args))
+
+        # Test cache
         self.assertGreaterEqual(cache_info.hits, 1)
         expected_nfev = cache_info.currsize + cache_info.hits
         self.assertEqual(result.nfev, expected_nfev)
