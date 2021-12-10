@@ -26,7 +26,7 @@ No additional third-party packages are required or installed.
 ## Variables
 The following classes of variables are available:
 
-| Space      | Usage                              | Description                                                   | Decoding            | Examples                                                 |
+| Space      | Usage                              | Description                                                   | Decoder             | Examples                                                 |
 |------------|------------------------------------|---------------------------------------------------------------|---------------------|----------------------------------------------------------|
 | Discrete   | _**ChoiceVar**(items)_             | Unordered categorical                                         | one-hot via max     | • fn(["USA", "Panama", "Cayman"])                        |
 | Discrete   | _**GridVar**(values)_              | Ordinal (ordered categorical)                                 | round               | • fn([2, 4, 8, 16])<br/>• fn(["good", "better", "best"]) |
