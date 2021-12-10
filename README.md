@@ -21,6 +21,8 @@ Python ≥3.10 is required. To install, run:
 
     pip install wrapdisc
 
+No additional third-party packages are required or installed.
+
 ## Variables
 The following classes of variables are available:
 
