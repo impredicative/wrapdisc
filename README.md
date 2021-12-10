@@ -50,7 +50,7 @@ def your_mixed_optimization_objective(x: tuple, *args: Any) -> float:
 
 wrapped_objective = Objective(
             your_mixed_optimization_objective,
-            [
+            variables=[
                 ChoiceVar(["foobar", "baz"]),
                 ChoiceVar([operator.index, abs, operator.invert]),
                 GridVar([0.01, 0.1, 1, 10, 100]),
