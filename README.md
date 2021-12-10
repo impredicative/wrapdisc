@@ -3,12 +3,11 @@
 It maps the discrete variables into a continuous space, and uses an in-memory cache over the discrete space.
 Both discrete and continuous variables are supported, and are motivated by [Ray Tune's search spaces](https://docs.ray.io/en/latest/tune/key-concepts.html#search-spaces).
 
-[![cicd badge](https://github.com/impredicative/wrapdisc/workflows/cicd/badge.svg?branch=master)](https://github.com/impredicative/wrapdisc/actions?query=workflow%3Acicd+branch%3Amaster)
-
-## Limitations
-The current implementation has these limitations:
-* An unbounded in-memory cache is used over the original objective function, imposing a memory requirement.
+The use of an unbounded in-memory cache is used over the original objective function imposes a memory requirement.
 If multiple workers are used, each worker has its own such cache, thereby using additional memory for each worker.
+This cache prevents duplicated calls to the original objective function in a worker.
+
+[![cicd badge](https://github.com/impredicative/wrapdisc/workflows/cicd/badge.svg?branch=master)](https://github.com/impredicative/wrapdisc/actions?query=workflow%3Acicd+branch%3Amaster)
 
 ## Links
 | Caption   | Link                                               |
@@ -54,7 +53,7 @@ wrapped_objective = Objective(
                 ChoiceVar(["foobar", "baz"]),
                 ChoiceVar([operator.index, abs, operator.invert]),
                 GridVar([0.01, 0.1, 1, 10, 100]),
-                GridVar(["disagreed", "neutral", "agreed"]),
+                GridVar(["good", "better", "best"]),
                 RandintVar(-8, 10),
                 QrandintVar(1, 10, 2),
                 UniformVar(1.2, 3.4),
@@ -76,23 +75,23 @@ Output:
 >>> wrapped_objective.bounds
 ((0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (-0.49999999999999994, 4.499999999999999), (-0.49999999999999994, 2.4999999999999996), (-8.499999999999998, 10.499999999999998), (1.0000000000000002, 10.999999999999998), (1.2, 3.4), (-11.109999999999998, 10.009999999999998))
 >>> result
-     fun: 25.210000000000004
+     fun: 23.21
      jac: array([0.        , 0.        , 0.        , 0.        , 0.        ,
        0.        , 0.        , 0.        , 0.        , 1.00000009,
        0.        ])
  message: 'Optimization terminated successfully.'
-    nfev: 6789
-     nit: 40
+    nfev: 7119
+     nit: 42
  success: True
-       x: array([  0.29493233,   0.88254257,   0.12721268,   0.48978776,
-         0.39078759,  -0.04540115,   1.87464003,  -8.02943494,
-         1.02999311,   1.2       , -10.98560722])
+       x: array([  0.58467199,   0.72299406,   0.35864397,   0.65881822,
+         0.12084548,  -0.46336082,  -0.22147362,  -8.01661046,
+         2.32989067,   1.2       , -10.91142129])
 
 >>> decoded_solution
-('baz', <built-in function abs>, 0.01, 'agreed', -8, 2, 1.2, -11.0)
+('baz', <built-in function abs>, 0.01, 'good', -8, 2, 1.2, -11.0)
 >>> your_mixed_optimization_objective(decoded_solution, *optional_fixed_args)
-25.210000000000004
+23.21
 
 >>> cache_usage
-CacheInfo(hits=169, misses=6620, maxsize=None, currsize=6620)
+CacheInfo(hits=153, misses=6966, maxsize=None, currsize=6966)
 ```
