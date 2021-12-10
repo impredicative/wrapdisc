@@ -7,7 +7,6 @@ Both discrete and continuous variables are supported, and are motivated by [Ray 
 
 ## Limitations
 The current implementation has these limitations:
-* The wrapped objective function cannot be pickled, and so multiple workers cannot be used for optimization.
 * An unbounded in-memory cache is used over the original objective function, imposing a memory requirement.
 
 ## Links

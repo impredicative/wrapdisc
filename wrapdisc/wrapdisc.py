@@ -48,6 +48,17 @@ class Objective:
         self.func = cache(func)
         self.vars = Vars(variables)
 
+    def __getstate__(self) -> dict[str, Any]:
+        """Return the state to be pickled."""
+        state = self.__dict__.copy()
+        state["func"] = self.func.__wrapped__  # Note: self.func is a cache that cannot be pickled.
+        return state
+
+    def __setstate__(self, state: dict[str, Any]) -> None:
+        """Restore the state that was pickled."""
+        self.__dict__.update(state)  # pragma: no cover
+        self.func = cache(self.func)  # pragma: no cover
+
     def __getitem__(self, encoded: EncodingType) -> tuple:
         """Return the decoded solution from its encoded solution."""
         return self.vars[encoded]

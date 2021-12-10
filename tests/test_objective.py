@@ -118,3 +118,19 @@ class TestObjective(unittest.TestCase):
         self.assertGreaterEqual(cache_info.hits, 1)
         expected_nfev = cache_info.currsize + cache_info.hits
         self.assertEqual(result.nfev, expected_nfev)
+
+    def test_minimize_with_multiple_workers(self):
+        # Test result
+        updating = "deferred"  # Prevents a warning if when using workers > 1
+        result = scipy.optimize.differential_evolution(self.objective, self.objective.bounds, seed=0, workers=2, updating=updating)
+        self.assertIsInstance(result.fun, float)
+
+        # Test solution
+        encoded_solution = result.x
+        decoded_solution = self.objective[encoded_solution]
+        expected_decoded_solution = ("baz", abs, "x", 0.01, "best", -8, 2, 1.2000041000840649, -11.0, 4.6000000000000005)
+        self.assertEqual(decoded_solution, expected_decoded_solution)
+        self.assertEqual(result.fun, self.objective(encoded_solution))
+        self.assertEqual(result.fun, _mixed_optimization_objective(decoded_solution))
+
+        # Note: Unlike in test_minimize, cache assertions are skipped because a separate cache exists in each worker.
