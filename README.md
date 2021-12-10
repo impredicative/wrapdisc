@@ -8,6 +8,7 @@ Both discrete and continuous variables are supported, and are motivated by [Ray 
 ## Limitations
 The current implementation has these limitations:
 * An unbounded in-memory cache is used over the original objective function, imposing a memory requirement.
+If multiple workers are used, each worker has its own such cache, thereby using additional memory for each worker.
 
 ## Links
 | Caption   | Link                                               |
