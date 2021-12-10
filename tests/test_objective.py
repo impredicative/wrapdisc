@@ -121,7 +121,7 @@ class TestObjective(unittest.TestCase):
 
     def test_minimize_with_multiple_workers(self):
         # Test result
-        updating = "deferred"  # Prevents a warning if when using workers > 1
+        updating = "deferred"  # Prevents a warning with workers > 1
         result = scipy.optimize.differential_evolution(self.objective, self.objective.bounds, seed=0, workers=2, updating=updating)
         self.assertIsInstance(result.fun, float)
 
