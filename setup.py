@@ -14,7 +14,7 @@ setup(
     author="Ouroboros Chrysopoeia",
     author_email="impredicative@users.noreply.github.com",
     version=cast(Match, re.fullmatch(r"refs/tags/v?(?P<ver>\S+)", os.environ["GITHUB_REF"]))["ver"],  # Ex: GITHUB_REF="refs/tags/1.2.3"; version="1.2.3"
-    description="Optimize both discrete and continuous variables using just a continuous optimizer such as scipy.optimize",
+    description="Optimize both discrete and continuous variables using just a continuous optimizer such as in scipy.optimize",
     keywords="optimization discrete continuous scipy.optimize wrapper",
     long_description=(_DIR / "README.md").read_text().strip(),
     long_description_content_type="text/markdown",
