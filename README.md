@@ -1,5 +1,5 @@
 # wrapdisc
-**wrapdisc** is a Python 3.10 package to wrap a discrete optimization objective such that it can be optimized by a continuous optimizer such as [`scipy.optimize`](https://docs.scipy.org/doc/scipy/reference/optimize.html).
+**wrapdisc** is a Python 3.10 package to wrap a discrete optimization objective such that it can be optimized by a continuous optimizer such as in [`scipy.optimize`](https://docs.scipy.org/doc/scipy/reference/optimize.html).
 It maps the discrete variables into a continuous space, and uses an in-memory cache over the discrete space.
 Both discrete and continuous variables are supported, and are motivated by [Ray Tune's search spaces](https://docs.ray.io/en/latest/tune/key-concepts.html#search-spaces).
 
@@ -28,7 +28,7 @@ The following classes of variables are available:
 
 | Space      | Usage                              | Description                                                   | Decoder             | Examples                                                 |
 |------------|------------------------------------|---------------------------------------------------------------|---------------------|----------------------------------------------------------|
-| Discrete   | _**ChoiceVar**(items)_             | Unordered categorical                                         | one-hot via max     | • fn(["USA", "Panama", "Cayman"])                        |
+| Discrete   | _**ChoiceVar**(items)_             | Nominal (unordered categorical)                               | one-hot via max     | • fn(["USA", "Panama", "Cayman"])                        |
 | Discrete   | _**GridVar**(values)_              | Ordinal (ordered categorical)                                 | round               | • fn([2, 4, 8, 16])<br/>• fn(["good", "better", "best"]) |
 | Discrete   | _**RandintVar**(lower, upper)_     | Integer from `lower` to `upper`, both inclusive               | round               | • fn(0, 6)<br/>• fn(3, 9)<br/>• fn(-10, 10)              |
 | Discrete   | _**QrandintVar**(lower, upper, q)_ | Quantized integer from `lower` to `upper` in multiples of `q` | round to a multiple | • fn(0, 12, 3)<br/>• fn(1, 10, 2)<br/>• fn(-10, 10, 4)   |
