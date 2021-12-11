@@ -179,7 +179,8 @@ class QrandintVar(BaseVar):
         assert isinstance(encoded[0], (float, int))
         assert self.bounds[0][0] <= encoded[0] <= self.bounds[0][1]  # Invalid encoded value.
         decoded = round_nearest(encoded[0], self.quantum)
-        assert isinstance(decoded, int)
+        assert decoded == round(decoded)
+        decoded = int(decoded)
         assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
         return decoded
 

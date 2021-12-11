@@ -1,6 +1,6 @@
 """float utilities."""
-
 import math
+from fractions import Fraction
 from typing import overload
 
 
@@ -27,22 +27,19 @@ def round_nearest(num: float, to: float) -> float:
 def round_nearest(num, to):
     """Round `num` to the nearest multiple of `to`."""
     # Ref: https://stackoverflow.com/a/70210770/
-    return round(num / to) * to
+    num, to = Fraction(str(num)), Fraction(str(to))
+    return float(round(num / to) * to)
 
 
 def round_down(num: float, to: float) -> float:
     """Round `num` down to the nearest multiple of `to`."""
     # Ref: https://stackoverflow.com/a/70210770/
-    nearest = round_nearest(num, to)
-    if math.isclose(num, nearest):
-        return num
-    return nearest if nearest < num else nearest - to
+    num, to = Fraction(str(num)), Fraction(str(to))
+    return float(math.floor(num / to) * to)
 
 
 def round_up(num: float, to: float) -> float:
     """Round `num` up to the nearest multiple of `to`."""
     # Ref: https://stackoverflow.com/a/70210770/
-    nearest = round_nearest(num, to)
-    if math.isclose(num, nearest):
-        return num
-    return nearest if nearest > num else nearest + to
+    num, to = Fraction(str(num)), Fraction(str(to))
+    return float(math.ceil(num / to) * to)
