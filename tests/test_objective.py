@@ -81,7 +81,7 @@ class TestObjective(unittest.TestCase):
         # Test cache
         self.assertEqual(self.objective.cache_info._asdict(), {"currsize": 1, "hits": 1, "maxsize": None, "misses": 1})
 
-    def test_minimize(self):
+    def test_optimize_de(self):
         # Test result
         result = scipy.optimize.differential_evolution(self.objective, self.objective.bounds, seed=0)
         self.assertIsInstance(result.fun, float)
@@ -100,7 +100,7 @@ class TestObjective(unittest.TestCase):
         expected_nfev = cache_info.currsize + cache_info.hits
         self.assertEqual(result.nfev, expected_nfev)
 
-    def test_minimize_with_fixed_args(self):
+    def test_optimize_de_with_fixed_args(self):
         fixed_args = ("arg1", 2, 3.0)
         result = scipy.optimize.differential_evolution(self.objective, bounds=self.objective.bounds, args=fixed_args, seed=0)
         self.assertIsInstance(result.fun, float)
@@ -119,7 +119,7 @@ class TestObjective(unittest.TestCase):
         expected_nfev = cache_info.currsize + cache_info.hits
         self.assertEqual(result.nfev, expected_nfev)
 
-    def test_minimize_with_multiple_workers(self):
+    def test_optimize_de_with_multiple_workers(self):
         # Test result
         updating = "deferred"  # Prevents a warning with workers > 1
         result = scipy.optimize.differential_evolution(self.objective, self.objective.bounds, seed=0, workers=2, updating=updating)
@@ -133,4 +133,4 @@ class TestObjective(unittest.TestCase):
         self.assertEqual(result.fun, self.objective(encoded_solution))
         self.assertEqual(result.fun, _mixed_optimization_objective(decoded_solution))
 
-        # Note: Unlike in test_minimize, cache assertions are skipped because a separate cache exists in each worker.
+        # Note: Unlike in test_optimize_de, cache assertions are skipped because a separate cache exists in each worker.
