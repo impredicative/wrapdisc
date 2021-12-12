@@ -3,11 +3,14 @@
 It maps the discrete variables into a continuous space, and uses an in-memory cache over the discrete space.
 Both discrete and continuous variables are supported, and are motivated by [Ray Tune's search spaces](https://docs.ray.io/en/latest/tune/key-concepts.html#search-spaces).
 
-The use of an unbounded in-memory cache over the original objective function imposes a memory requirement.
+[![cicd badge](https://github.com/impredicative/wrapdisc/workflows/cicd/badge.svg?branch=master)](https://github.com/impredicative/wrapdisc/actions?query=workflow%3Acicd+branch%3Amaster)
+
+## Limitations
+* The use of an unbounded in-memory cache over the original objective function imposes a memory requirement.
 If multiple workers are used, each worker has its own such cache, thereby using additional memory for each worker.
 This cache prevents duplicated calls to the original objective function in a worker.
-
-[![cicd badge](https://github.com/impredicative/wrapdisc/workflows/cicd/badge.svg?branch=master)](https://github.com/impredicative/wrapdisc/actions?query=workflow%3Acicd+branch%3Amaster)
+* The ability to support constraints such as `scipy.optimize.NonlinearConstraint` or `scipy.optimize.LinearConstraint` is unclear. 
+A constraint can however be modeled by returning `inf` upon its violation in the original objective function.
 
 ## Links
 | Caption   | Link                                               |
