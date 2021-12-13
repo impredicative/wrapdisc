@@ -4,7 +4,7 @@ import abc
 from functools import cache, cached_property
 from typing import Any, Sequence, Union, final
 
-from wrapdisc.util.float import next_float, prev_float, round_down, round_nearest, round_up
+from wrapdisc.util.float import div_float, next_float, prev_float, round_down, round_nearest, round_up, sum_floats
 
 BoundType = tuple[float, float]
 BoundsType = Sequence[BoundType]
@@ -130,14 +130,16 @@ class QuniformVar(BaseVar):
 
     @cached_property
     def bounds(self) -> BoundsType:
-        half_step = self.quantum / 2
+        half_step = div_float(self.quantum, 2)
         quantized_lower = round_up(self.lower, self.quantum)
         quantized_upper = round_down(self.upper, self.quantum)
         assert self.lower <= quantized_lower <= quantized_upper <= self.upper
         assert self.quantum <= (quantized_upper - quantized_lower)
-        return ((next_float(quantized_lower - half_step), prev_float(quantized_upper + half_step)),)
+        lower_bound = next_float(sum_floats((quantized_lower, -half_step)))
+        upper_bound = prev_float(sum_floats((quantized_upper, half_step)))
         # Note: Using half_step allows uniform probability for boundary values of encoded range.
         # Note: Using next_float and prev_float prevent decoding a boundary value of encoded range to a decoded value outside the valid decoded range.
+        return ((lower_bound, upper_bound),)
 
     def decode(self, encoded: EncodingType, /) -> float:
         assert len(encoded) == 1
@@ -174,9 +176,11 @@ class RandintVar(BaseVar):
     @cached_property
     def bounds(self) -> BoundsType:
         half_step = 0.5
-        return ((next_float(self.lower - half_step), prev_float(self.upper + half_step)),)
+        lower_bound = next_float(self.lower - half_step)
+        upper_bound = prev_float(self.upper + half_step)
         # Note: Using half_step allows uniform probability for boundary values of encoded range.
         # Note: Using next_float and prev_float prevent decoding a boundary value of encoded range to a decoded value outside the valid decoded range.
+        return ((lower_bound, upper_bound),)
 
     def decode(self, encoded: EncodingType, /) -> int:
         assert len(encoded) == 1
@@ -209,14 +213,16 @@ class QrandintVar(BaseVar):
 
     @cached_property
     def bounds(self) -> BoundsType:
-        half_step = self.quantum / 2
+        half_step = div_float(self.quantum, 2)
         quantized_lower = round_up(self.lower, self.quantum)
         quantized_upper = round_down(self.upper, self.quantum)
         assert self.lower <= quantized_lower <= quantized_upper <= self.upper
         assert self.quantum <= (quantized_upper - quantized_lower)
-        return ((next_float(quantized_lower - half_step), prev_float(quantized_upper + half_step)),)
+        lower_bound = next_float(sum_floats((quantized_lower, -half_step)))
+        upper_bound = prev_float(sum_floats((quantized_upper, half_step)))
         # Note: Using half_step allows uniform probability for boundary values of encoded range.
         # Note: Using next_float and prev_float prevent decoding a boundary value of encoded range to a decoded value outside the valid decoded range.
+        return ((lower_bound, upper_bound),)
 
     def decode(self, encoded: EncodingType, /) -> int:
         assert len(encoded) == 1

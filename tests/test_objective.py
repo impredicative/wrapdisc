@@ -45,7 +45,7 @@ class TestObjective(unittest.TestCase):
             (1.0000000000000002, 10.999999999999998),  # QrandintVar
             (1.2, 3.4),  # UniformVar
             (-11.109999999999998, 10.009999999999998),  # QuniformVar 1
-            (4.500000000000001, 81.69999999999997),  # QuniformVar 2
+            (4.500000000000001, 81.69999999999999),  # QuniformVar 2
         )
         self.assertEqual(expected_bounds, self.objective.bounds)
 
