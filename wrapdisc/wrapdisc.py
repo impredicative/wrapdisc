@@ -22,12 +22,26 @@ class Vars:
         self.decoded_len = len(self._variables)
         self.encoded_len = sum(variable_lengths)
 
-    def __getitem__(self, encoded: EncodingType) -> tuple:
-        """Return the decoded solution from its encoded solution."""
+    def decode(self, encoded: EncodingType) -> tuple:
+        """Return the decoded solution from its encoded solution.
+
+        Note that multiple encoded solutions can correspond to the same decoded solution, but a decoded solution corresponds to a single encoded solution.
+        """
         assert len(encoded) == self.encoded_len
-        decoded = tuple(var[encoded[var_slice]] for var, var_slice in self._variables_slices.items())
+        decoded = tuple(var.decode(encoded[var_slice]) for var, var_slice in self._variables_slices.items())
         assert len(decoded) == self.decoded_len
         return decoded
+
+    def encode(self, decoded: Sequence) -> EncodingType:
+        """Return the encoded solution from its decoded solution.
+
+        Note that multiple encoded solutions can correspond to the same decoded solution, but a decoded solution corresponds to a single encoded solution.
+        """
+        assert len(decoded) == self.decoded_len
+        encoded = tuple(itertools.chain(*(var.encode(decoded_var) for var, decoded_var in zip(self._variables, decoded))))
+        assert len(encoded) == self.encoded_len
+        assert tuple(decoded) == self.decode(encoded)
+        return encoded
 
     @cached_property
     def bounds(self) -> BoundsType:
@@ -59,9 +73,19 @@ class Objective:
         self.__dict__.update(state)  # pragma: no cover
         self.func = cache(self.func)  # pragma: no cover
 
-    def __getitem__(self, encoded: EncodingType) -> tuple:
-        """Return the decoded solution from its encoded solution."""
-        return self.vars[encoded]
+    def decode(self, encoded: EncodingType) -> tuple:
+        """Return the decoded solution from its encoded solution.
+
+        Note that multiple encoded solutions can correspond to the same decoded solution, but a decoded solution corresponds to a single encoded solution.
+        """
+        return self.vars.decode(encoded)
+
+    def encode(self, decoded: Sequence) -> EncodingType:
+        """Return the encoded solution from its decoded solution.
+
+        Note that multiple encoded solutions can correspond to the same decoded solution, but a decoded solution corresponds to a single encoded solution.
+        """
+        return self.vars.encode(decoded)
 
     def __call__(self, encoded: EncodingType, *args: Any) -> float:
         """Return the result from calling the objective function.
@@ -71,7 +95,8 @@ class Objective:
         :param encoded: This is the encoded solution which first gets decoded. The original objective function is then called with the decoded solution.
         :param args: Additional positional parameters, if any, that are given to the objective function.
         """
-        return self.func(self[encoded], *args)
+        decoded = self.decode(encoded)
+        return self.func(decoded, *args)
 
     @property
     def bounds(self) -> BoundsType:
@@ -80,5 +105,8 @@ class Objective:
 
     @property
     def cache_info(self) -> CacheInfo:
-        """Return info about the cache over the input function."""
+        """Return info about the cache over the input function.
+
+        Note that if multiple worker processes are used, the cache is separate in each process.
+        """
         return self.func.cache_info()

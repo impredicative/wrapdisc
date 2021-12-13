@@ -65,19 +65,22 @@ wrapped_objective = Objective(
                 QuniformVar(-11.1, 9.99, 0.22),
             ],
         )
-
+bounds = wrapped_objective.bounds
 optional_fixed_args = ("arg1", 2, 3.0)
-result = scipy.optimize.differential_evolution(wrapped_objective, wrapped_objective.bounds, args=optional_fixed_args, seed=0)
+optional_initial_decoded_guess = ("foobar", operator.invert, 10, "better", 0, 8, 2.33, 8.8)
+optional_initial_encoded_guess = wrapped_objective.encode(optional_initial_decoded_guess)
+
+result = scipy.optimize.differential_evolution(wrapped_objective, bounds=bounds, seed=0, args=optional_fixed_args, x0=optional_initial_encoded_guess)
 cache_usage = wrapped_objective.cache_info
 encoded_solution = result.x
-decoded_solution = wrapped_objective[encoded_solution]
+decoded_solution = wrapped_objective.decode(encoded_solution)
 assert result.fun == wrapped_objective(encoded_solution, *optional_fixed_args)
 assert result.fun == your_mixed_optimization_objective(decoded_solution, *optional_fixed_args)
 ```
 
 Output:
 ```python
->>> wrapped_objective.bounds
+>>> bounds
 ((0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (-0.49999999999999994, 4.499999999999999), (-0.49999999999999994, 2.4999999999999996), (-8.499999999999998, 10.499999999999998), (1.0000000000000002, 10.999999999999998), (1.2, 3.4), (-11.109999999999998, 10.009999999999998))
 
 >>> result
@@ -86,12 +89,12 @@ Output:
        0.        , 0.        , 0.        , 0.        , 1.00000009,
        0.        ])
  message: 'Optimization terminated successfully.'
-    nfev: 7119
-     nit: 42
+    nfev: 7944
+     nit: 47
  success: True
-       x: array([  0.58467199,   0.72299406,   0.35864397,   0.65881822,
-         0.12084548,  -0.46336082,  -0.22147362,  -8.01661046,
-         2.32989067,   1.2       , -10.91142129])
+       x: array([  0.22045614,   0.95317493,   0.22747255,   0.53879713,
+         0.18086281,   0.222759  ,   0.33591717,  -8.29118977,
+         1.77128301,   1.2       , -10.97230444])
 
 >>> decoded_solution
 ('baz', <built-in function abs>, 0.01, 'good', -8, 2, 1.2, -11.0)
@@ -100,5 +103,5 @@ Output:
 23.21
 
 >>> cache_usage
-CacheInfo(hits=153, misses=6966, maxsize=None, currsize=6966)
+CacheInfo(hits=146, misses=7798, maxsize=None, currsize=7798)
 ```

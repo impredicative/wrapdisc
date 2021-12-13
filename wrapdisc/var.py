@@ -20,11 +20,6 @@ class BaseVar(abc.ABC):
         """Return the length of an encoded solution."""
         return len(self.bounds)
 
-    @final
-    def __getitem__(self, encoded: EncodingType) -> Any:
-        """Return the decoded solution from its encoded solution."""
-        return self.decode(encoded)
-
     @cached_property
     @abc.abstractmethod
     def bounds(self) -> BoundsType:
@@ -33,8 +28,19 @@ class BaseVar(abc.ABC):
 
     @abc.abstractmethod
     def decode(self, encoded: EncodingType, /) -> Any:
-        """Return the decoded solution from its encoded solution."""
+        """Return the decoded solution from its encoded solution.
+
+        Note that multiple encoded solutions can correspond to the same decoded solution, but a decoded solution corresponds to a single encoded solution.
+        """
         return encoded[0]  # pragma: no cover
+
+    @abc.abstractmethod
+    def encode(self, decoded: Any) -> EncodingType:
+        """Return the encoded solution from its decoded solution.
+
+        Note that multiple encoded solutions can correspond to the same decoded solution, but a decoded solution corresponds to a single encoded solution.
+        """
+        return (decoded,)  # pragma: no cover
 
 
 class ChoiceVar(BaseVar):
@@ -63,10 +69,23 @@ class ChoiceVar(BaseVar):
         if self.encoding_len > 1:
             assert all(isinstance(f, (float, int)) for f in encoded)
             assert all((0.0 <= f <= 1.0) for f in encoded)
-            index = max(range(len(encoded)), key=encoded.__getitem__)
-            return self.categories[index]  # First category having max value is selected.
-        assert self.encoding_len == 0
-        return self.categories[0]
+            hot_index = max(range(len(encoded)), key=encoded.__getitem__)
+            decoded = self.categories[hot_index]  # First category having max value is selected.
+        else:
+            assert self.encoding_len == 0
+            decoded = self.categories[0]
+        return decoded
+
+    def encode(self, decoded: Any) -> EncodingType:
+        assert decoded in self.categories
+        if self.encoding_len > 1:
+            hot_index = self.categories.index(decoded)
+            encoded = tuple(1.0 if cur_index == hot_index else 0.0 for cur_index in range(self.encoding_len))
+        else:
+            assert self.encoding_len == 0
+            encoded = ()
+        assert decoded == self.decode(encoded)
+        return encoded
 
 
 class UniformVar(BaseVar):
@@ -89,6 +108,14 @@ class UniformVar(BaseVar):
         decoded = float(encoded[0])
         assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
         return decoded
+
+    def encode(self, decoded: float) -> EncodingType:
+        assert isinstance(decoded, (float, int))
+        assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
+        encoded = (float(decoded),)
+        assert self.bounds[0][0] <= encoded[0] <= self.bounds[0][1]  # Invalid encoded value.
+        assert decoded == self.decode(encoded)
+        return encoded
 
 
 class QuniformVar(BaseVar):
@@ -121,6 +148,15 @@ class QuniformVar(BaseVar):
         assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
         return decoded
 
+    def encode(self, decoded: float) -> EncodingType:
+        assert isinstance(decoded, (float, int))
+        assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
+        assert decoded == round_nearest(decoded, self.quantum)  # Invalid encoded value.
+        encoded = (float(decoded),)
+        assert self.bounds[0][0] <= encoded[0] <= self.bounds[0][1]  # Invalid encoded value.
+        assert decoded == self.decode(encoded)
+        return encoded
+
 
 class RandintVar(BaseVar):
     """Uniform integer sampler."""
@@ -150,6 +186,14 @@ class RandintVar(BaseVar):
         assert isinstance(decoded, int)
         assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
         return decoded
+
+    def encode(self, decoded: int) -> EncodingType:
+        assert isinstance(decoded, int)
+        assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
+        encoded = (float(decoded),)
+        assert self.bounds[0][0] <= encoded[0] <= self.bounds[0][1]  # Invalid encoded value.
+        assert decoded == self.decode(encoded)
+        return encoded
 
 
 class QrandintVar(BaseVar):
@@ -184,6 +228,15 @@ class QrandintVar(BaseVar):
         assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
         return decoded
 
+    def encode(self, decoded: int) -> EncodingType:
+        assert isinstance(decoded, int)
+        assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
+        assert decoded == round_nearest(decoded, self.quantum)  # Invalid encoded value.
+        encoded = (float(decoded),)
+        assert self.bounds[0][0] <= encoded[0] <= self.bounds[0][1]  # Invalid encoded value.
+        assert decoded == self.decode(encoded)
+        return encoded
+
 
 class GridVar(BaseVar):
     """Grid sampler."""
@@ -205,5 +258,13 @@ class GridVar(BaseVar):
         return self.randint_var.bounds
 
     def decode(self, encoded: EncodingType, /) -> Any:
-        decoded = self.randint_var.decode(encoded)
-        return self.values[decoded]
+        decoded_index = self.randint_var.decode(encoded)
+        decoded = self.values[decoded_index]
+        return decoded
+
+    def encode(self, decoded: Any) -> EncodingType:
+        assert decoded in self.values
+        decoded_index = self.values.index(decoded)
+        encoded = self.randint_var.encode(decoded_index)
+        assert decoded == self.decode(encoded)
+        return encoded
