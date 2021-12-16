@@ -1,5 +1,6 @@
 """Test wrapped objective."""
 # pylint: disable=missing-class-docstring,missing-function-docstring
+import math
 import operator
 import unittest
 from typing import Any
@@ -102,6 +103,10 @@ class TestObjective(unittest.TestCase):
 
         # Test cache
         self.assertEqual(self.objective.cache_info._asdict(), {"currsize": 1, "hits": 1, "maxsize": None, "misses": 1})
+
+    def test_encoded_nan(self):
+        encoded = [math.nan] * self.objective.vars.encoded_len
+        self.assertTrue(math.isnan(self.objective(encoded)))
 
     def test_optimize_de(self):
         # Test result

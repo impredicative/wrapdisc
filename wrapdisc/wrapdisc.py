@@ -1,6 +1,7 @@
 """Wrapped optimization objective callable."""
 
 import itertools
+import math
 from functools import _CacheInfo as CacheInfo
 from functools import cache, cached_property
 from typing import Any, Callable, Sequence
@@ -95,6 +96,10 @@ class Objective:
         :param encoded: This is the encoded solution which first gets decoded. The original objective function is then called with the decoded solution.
         :param args: Additional positional parameters, if any, that are given to the objective function.
         """
+        if any(math.isnan(num) for num in encoded):
+            # Note: "encoded==[nan, nan, nan]" was observed with scipy.optimize.dual_annealing, leading to a decoding assertion error without this condition.
+            # Note: Checking "math.nan in encoded" doesn't detect a numpy nan.
+            return math.nan
         decoded = self.decode(encoded)
         return self.func(decoded, *args)
 
