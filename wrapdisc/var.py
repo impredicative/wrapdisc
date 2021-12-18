@@ -54,7 +54,7 @@ class ChoiceVar(BaseVar):
         """
         # Motivational reference: https://docs.ray.io/en/latest/tune/api_docs/search_space.html#tune-choice
         assert categories
-        self.categories = categories
+        self.categories = tuple(categories)  # Note: Explicit conversion to tuple allows supporting a dict (keys) as input.
         num_categories = len(self.categories)
         assert num_categories == len(set(self.categories))
         self.encoding_len = 0 if (num_categories == 1) else num_categories
@@ -255,7 +255,7 @@ class GridVar(BaseVar):
         # Motivational reference: https://docs.ray.io/en/latest/tune/api_docs/search_space.html#grid-search-api
         assert values
         # Note: values must not be explicitly sorted here in order to support pre-ordered strings, e.g. ["good", "better", "best"]
-        self.values = values
+        self.values = tuple(values)  # Note: Explicit conversion to tuple allows supporting a dict (keys) as input.
         assert len(self.values) == len(set(self.values))
         self.randint_var = RandintVar(0, len(values) - 1)
 
