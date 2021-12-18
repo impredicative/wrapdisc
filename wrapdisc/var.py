@@ -257,7 +257,7 @@ class GridVar(BaseVar):
         # Note: values must not be explicitly sorted here in order to support pre-ordered strings, e.g. ["good", "better", "best"]
         self.values = tuple(values)  # Note: Explicit conversion to tuple allows supporting a dict (keys) as input.
         assert len(self.values) == len(set(self.values))
-        self.randint_var = RandintVar(0, len(values) - 1)
+        self.randint_var = RandintVar(0, len(self.values) - 1)
 
     @cached_property
     def bounds(self) -> BoundsType:
