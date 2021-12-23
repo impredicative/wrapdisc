@@ -257,20 +257,29 @@ class GridVar(BaseVar):
         # Note: values must *not* be explicitly sorted here in order to support pre-ordered strings, e.g. ["good", "better", "best"]
         self.values = tuple(values)  # Note: Explicit conversion to tuple allows supporting a dict (keys) as input.
         assert len(self.values) == len(set(self.values))
-        self.randint_var = RandintVar(0, len(self.values) - 1)
+        self.randint_var = None if (len(self.values) == 1) else RandintVar(0, len(self.values) - 1)
 
     @cached_property
     def bounds(self) -> BoundsType:
-        return self.randint_var.bounds
+        return self.randint_var.bounds if (self.randint_var is not None) else ()
 
     def decode(self, encoded: EncodingType, /) -> Any:
-        decoded_index = self.randint_var.decode(encoded)
-        decoded = self.values[decoded_index]
+        if self.randint_var is not None:
+            decoded_index = self.randint_var.decode(encoded)
+            decoded = self.values[decoded_index]
+        else:
+            assert len(encoded) == 0
+            assert len(self.values) == 1
+            decoded = self.values[0]
         return decoded
 
     def encode(self, decoded: Any) -> EncodingType:
         assert decoded in self.values
-        decoded_index = self.values.index(decoded)
-        encoded = self.randint_var.encode(decoded_index)
-        assert decoded == self.decode(encoded)
+        if self.randint_var is not None:
+            decoded_index = self.values.index(decoded)
+            encoded = self.randint_var.encode(decoded_index)
+            assert decoded == self.decode(encoded)
+        else:
+            assert len(self.values) == 1
+            encoded = ()
         return encoded
