@@ -17,9 +17,9 @@ class Vars:
         assert all(isinstance(var, BaseVar) for var in variables)
         self._variables = variables
         variable_lengths = [len(v) for v in self._variables]
-        self._variables_slices = {
-            var: slice(tot_len - cur_len, tot_len) for var, cur_len, tot_len in zip(self._variables, variable_lengths, itertools.accumulate(variable_lengths))
-        }
+        self._variables_slices = [
+            (var, slice(tot_len - cur_len, tot_len)) for var, cur_len, tot_len in zip(self._variables, variable_lengths, itertools.accumulate(variable_lengths))
+        ]  # Note: A dict must not be used because it doesn't allow tracking the slices of duplicated variables.
         self.decoded_len = len(self._variables)
         self.encoded_len = sum(variable_lengths)
 
@@ -29,7 +29,7 @@ class Vars:
         Note that multiple encoded solutions can correspond to the same decoded solution, but a decoded solution corresponds to a single encoded solution.
         """
         assert len(encoded) == self.encoded_len
-        decoded = tuple(var.decode(encoded[var_slice]) for var, var_slice in self._variables_slices.items())
+        decoded = tuple(var.decode(encoded[var_slice]) for var, var_slice in self._variables_slices)
         assert len(decoded) == self.decoded_len
         return decoded
 

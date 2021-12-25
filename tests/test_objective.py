@@ -111,24 +111,12 @@ class TestObjective(unittest.TestCase):
         encoded = [math.nan] * self.objective.vars.encoded_len
         self.assertTrue(math.isnan(self.objective(encoded)))
 
-    def test_optimize_de(self):
-        # Test result
-        result = scipy.optimize.differential_evolution(self.objective, self.objective.bounds, seed=0)
-        self.assertIsInstance(result.fun, float)
-
-        # Test solution
-        encoded_solution = result.x
-        decoded_solution = self.objective.decode(encoded_solution)
-        cache_info = self.objective.cache_info
-        expected_decoded_solution = ("baz", abs, "x", 0.01, "good", "uno", -8, 2, 1.2, -11.0, 4.6)
-        self.assertEqual(decoded_solution, expected_decoded_solution)
-        self.assertEqual(result.fun, self.objective(encoded_solution))
-        self.assertEqual(result.fun, _mixed_optimization_objective(decoded_solution))
-
-        # Test cache
-        self.assertGreaterEqual(cache_info.hits, 1)
-        expected_nfev = cache_info.currsize + cache_info.hits
-        self.assertEqual(result.nfev, expected_nfev)
+    def test_duplicated_var(self):
+        objective = Objective(_mixed_optimization_objective, [GridVar(["yes", "no"])] * 2)
+        self.assertEqual(objective.encode(["yes", "no"]), (0.0, 1.0))
+        self.assertEqual(objective.decode((0.0, 1.0)), ("yes", "no"))
+        self.assertEqual(objective((0.0, 1.0)), 5.0)
+        self.assertEqual(objective.bounds, ((-0.49999999999999994, 1.4999999999999998),) * 2)
 
     def test_optimize_de_with_optionals(self):
         optional_fixed_args = ("arg1", 2, 3.0)
