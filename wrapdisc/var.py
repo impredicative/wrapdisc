@@ -175,6 +175,8 @@ class RandintVar(BaseVar):
 
     @cached_property
     def bounds(self) -> BoundsType:
+        if self.lower == self.upper:
+            return ()
         half_step = 0.5
         lower_bound = next_float(self.lower - half_step)
         upper_bound = prev_float(self.upper + half_step)
@@ -183,20 +185,29 @@ class RandintVar(BaseVar):
         return ((lower_bound, upper_bound),)
 
     def decode(self, encoded: EncodingType, /) -> int:
-        assert len(encoded) == 1
-        assert isinstance(encoded[0], (float, int))
-        assert self.bounds[0][0] <= encoded[0] <= self.bounds[0][1]  # Invalid encoded value.
-        decoded = round(encoded[0])
-        assert isinstance(decoded, int)
-        assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
+        if self.bounds:
+            assert len(encoded) == 1
+            assert isinstance(encoded[0], (float, int))
+            assert self.bounds[0][0] <= encoded[0] <= self.bounds[0][1]  # Invalid encoded value.
+            decoded = round(encoded[0])
+            assert isinstance(decoded, int)
+            assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
+        else:
+            assert len(encoded) == 0
+            assert self.lower == self.upper
+            decoded = self.lower
         return decoded
 
     def encode(self, decoded: int) -> EncodingType:
-        assert isinstance(decoded, int)
-        assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
-        encoded = (float(decoded),)
-        assert self.bounds[0][0] <= encoded[0] <= self.bounds[0][1]  # Invalid encoded value.
-        assert decoded == self.decode(encoded)
+        if self.bounds:
+            assert isinstance(decoded, int)
+            assert self.lower <= decoded <= self.upper, decoded  # Invalid decoded value.
+            encoded = (float(decoded),)
+            assert self.bounds[0][0] <= encoded[0] <= self.bounds[0][1]  # Invalid encoded value.
+            assert decoded == self.decode(encoded)
+        else:
+            assert self.lower == decoded == self.upper
+            encoded = ()  # type: ignore
         return encoded
 
 

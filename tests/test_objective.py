@@ -27,13 +27,14 @@ class TestObjective(unittest.TestCase):
                 GridVar(["good", "better", "best"]),
                 GridVar(["uno"]),
                 RandintVar(-8, 10),
+                RandintVar(1, 1),
                 QrandintVar(1, 10, 2),
                 UniformVar(1.2, 3.4),
                 QuniformVar(-11.1, 9.99, 0.22),
                 QuniformVar(4.6, 81.7, 0.2),  # Required for test coverage of `round_up`.
             ],
         )
-        self.decoded_guess = ("foobar", operator.invert, "x", 10, "better", "uno", 0, 8, 2.33, 8.8, 56.6)
+        self.decoded_guess = ("foobar", operator.invert, "x", 10, "better", "uno", 0, 1, 8, 2.33, 8.8, 56.6)
 
     def test_objective(self):
         self.assertEqual(self.objective.vars.decoded_len, len(self.decoded_guess))
@@ -71,11 +72,12 @@ class TestObjective(unittest.TestCase):
             0.01,  # GridVar 1
             "best",  # GridVar 2
             "uno",  # GridVar 3
-            -3,  # RandintVar
+            -3,  # RandintVar 1
+            1,  # RandintVar 2
             2,  # QrandintVar
             1.909,  # UniformVar
-            -11.0,  # QuniformVar
-            76.6,  # QuniformVar  (!= 76.6 due to floating point limitation in `round_up`)
+            -11.0,  # QuniformVar 1
+            76.6,  # QuniformVar 2
         )
         actual_decoded = self.objective.decode(encoded)
         self.assertEqual(expected_decoded, actual_decoded)
@@ -102,7 +104,7 @@ class TestObjective(unittest.TestCase):
 
         # Test function
         self.assertEqual(self.objective(encoded), _mixed_optimization_objective(actual_decoded))
-        self.assertAlmostEqual(self.objective(encoded), 100.519)
+        self.assertAlmostEqual(self.objective(encoded), 101.519)
 
         # Test cache
         self.assertEqual(self.objective.cache_info._asdict(), {"currsize": 1, "hits": 1, "maxsize": None, "misses": 1})
@@ -128,7 +130,7 @@ class TestObjective(unittest.TestCase):
         encoded_solution = result.x
         decoded_solution = self.objective.decode(encoded_solution)
         cache_info = self.objective.cache_info
-        expected_decoded_solution = ("baz", abs, "x", 0.01, "good", "uno", -8, 2, 1.2, -11.0, 4.6)
+        expected_decoded_solution = ("baz", abs, "x", 0.01, "good", "uno", -8, 1, 2, 1.2, -11.0, 4.6)
         self.assertEqual(decoded_solution, expected_decoded_solution)
         self.assertEqual(result.fun, self.objective(encoded_solution, *optional_fixed_args))
         self.assertEqual(result.fun, _mixed_optimization_objective(decoded_solution, *optional_fixed_args))
@@ -147,7 +149,7 @@ class TestObjective(unittest.TestCase):
         # Test solution
         encoded_solution = result.x
         decoded_solution = self.objective.decode(encoded_solution)
-        expected_decoded_solution = ("baz", abs, "x", 0.01, "best", "uno", -8, 2, 1.2000041000840649, -11.0, 4.6)
+        expected_decoded_solution = ("baz", abs, "x", 0.01, "best", "uno", -8, 1, 2, 1.2000041000840649, -11.0, 4.6)
         self.assertEqual(decoded_solution, expected_decoded_solution)
         self.assertEqual(result.fun, self.objective(encoded_solution))
         self.assertEqual(result.fun, _mixed_optimization_objective(decoded_solution))
@@ -162,7 +164,7 @@ class TestObjective(unittest.TestCase):
         encoded_solution = result.x
         decoded_solution = self.objective.decode(encoded_solution)
         cache_info = self.objective.cache_info
-        expected_decoded_solution = ("foobar", operator.invert, "x", 1, "good", "uno", 0, 2, 1.2, -11.0, 5.4)
+        expected_decoded_solution = ("foobar", operator.invert, "x", 1, "good", "uno", 0, 1, 2, 1.2, -11.0, 5.4)
         self.assertEqual(decoded_solution, expected_decoded_solution)
         self.assertEqual(result.fun, self.objective(encoded_solution))
         self.assertEqual(result.fun, _mixed_optimization_objective(decoded_solution))
