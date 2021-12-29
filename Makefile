@@ -1,4 +1,4 @@
-.PHONY: help clean fmt install prep setup test
+.PHONY: help clean fmt install prep setup test unittest
 
 help:
 	@echo "clean  : Remove auto-created files and directories."
@@ -27,3 +27,6 @@ test:
 	black --check .
 	vulture --exclude venv/ --make-whitelist . ./vulture.txt
 	pytest -v
+
+unittest:
+	python -m unittest discover
