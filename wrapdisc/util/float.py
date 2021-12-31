@@ -1,6 +1,6 @@
 """float utilities."""
-import math
 from fractions import Fraction
+from math import ceil, floor, inf, nextafter
 from typing import Sequence, overload
 
 
@@ -23,12 +23,12 @@ def sum_floats(nums: Sequence[int | float]) -> float:
 
 def next_float(val: float, /) -> float:
     """Return the float that's next after the given float."""
-    return math.nextafter(val, math.inf)
+    return nextafter(val, inf)
 
 
 def prev_float(val: float, /) -> float:
     """Return the float that's just before the given float."""
-    return math.nextafter(val, -math.inf)
+    return nextafter(val, -inf)
 
 
 @overload
@@ -58,7 +58,7 @@ def round_down(num: float, to: float) -> float:
     """
     # Ref: https://stackoverflow.com/a/70210770/
     num, to = Fraction(str(num)), Fraction(str(to))
-    return float(math.floor(num / to) * to)
+    return float(floor(num / to) * to)
 
 
 def round_up(num: float, to: float) -> float:
@@ -68,4 +68,4 @@ def round_up(num: float, to: float) -> float:
     """
     # Ref: https://stackoverflow.com/a/70210770/
     num, to = Fraction(str(num)), Fraction(str(to))
-    return float(math.ceil(num / to) * to)
+    return float(ceil(num / to) * to)
