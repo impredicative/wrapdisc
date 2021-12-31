@@ -1,9 +1,9 @@
 """Wrapped optimization objective callable."""
 
-import itertools
-import math
 from functools import _CacheInfo as CacheInfo
 from functools import cache, cached_property
+from itertools import accumulate, chain
+from math import isnan, nan
 from typing import Any, Callable, Sequence
 
 from wrapdisc.var import BaseVar, BoundsType, EncodingType
@@ -18,7 +18,7 @@ class Vars:
         self._variables = variables
         variable_lengths = [len(v) for v in self._variables]
         self._variables_slices = [
-            (var, slice(tot_len - cur_len, tot_len)) for var, cur_len, tot_len in zip(self._variables, variable_lengths, itertools.accumulate(variable_lengths))
+            (var, slice(tot_len - cur_len, tot_len)) for var, cur_len, tot_len in zip(self._variables, variable_lengths, accumulate(variable_lengths))
         ]  # Note: A dict must not be used because it doesn't allow tracking the slices of duplicated variables.
         self.decoded_len = len(self._variables)
         self.encoded_len = sum(variable_lengths)
@@ -39,7 +39,7 @@ class Vars:
         Note that multiple encoded solutions can correspond to the same decoded solution, but a decoded solution corresponds to a single encoded solution.
         """
         assert len(decoded) == self.decoded_len
-        encoded = tuple(itertools.chain(*(var.encode(decoded_var) for var, decoded_var in zip(self._variables, decoded))))
+        encoded = tuple(chain(*(var.encode(decoded_var) for var, decoded_var in zip(self._variables, decoded))))
         assert len(encoded) == self.encoded_len
         assert tuple(decoded) == self.decode(encoded)
         return encoded
@@ -47,7 +47,7 @@ class Vars:
     @cached_property
     def bounds(self) -> BoundsType:
         """Return the encoded bounds to provide to an optimizer such as `scipy.optimize`."""
-        return tuple(itertools.chain(*(v.bounds for v in self._variables)))
+        return tuple(chain(*(v.bounds for v in self._variables)))
 
 
 class Objective:
@@ -96,10 +96,10 @@ class Objective:
         :param encoded: This is the encoded solution which first gets decoded. The original objective function is then called with the decoded solution.
         :param args: Additional positional parameters, if any, that are given to the objective function.
         """
-        if any(math.isnan(num) for num in encoded):
+        if any(isnan(num) for num in encoded):
             # Note: "encoded==[nan, nan, nan]" was observed with scipy.optimize.dual_annealing, leading to a decoding assertion error without this condition.
             # Note: Checking "math.nan in encoded" doesn't detect a numpy nan.
-            return math.nan
+            return nan
         decoded = self.decode(encoded)
         return self.func(decoded, *args)
 
