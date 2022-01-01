@@ -2,7 +2,7 @@
 
 import abc
 from functools import cache, cached_property
-from typing import Any, Sequence, Union, final
+from typing import Any, Hashable, Sequence, Union, final
 
 from wrapdisc.util.float import div_float, next_float, prev_float, round_down, round_nearest, round_up, sum_floats
 
@@ -46,7 +46,7 @@ class BaseVar(abc.ABC):
 class ChoiceVar(BaseVar):
     """Category sampler."""
 
-    def __init__(self, categories: list[Any]):
+    def __init__(self, categories: Sequence[Hashable]):
         """Sample a categorical value.
 
         The one-max variation of one-hot encoding is used, such that the category with the max encoded value is sampled.
@@ -64,7 +64,7 @@ class ChoiceVar(BaseVar):
     def bounds(self) -> BoundsType:
         return ((0.0, 1.0),) * self.encoding_len
 
-    def decode(self, encoded: EncodingType, /) -> Any:
+    def decode(self, encoded: EncodingType, /) -> Hashable:
         assert len(encoded) == self.encoding_len
         if self.encoding_len > 1:
             assert all(isinstance(f, (float, int)) for f in encoded)
@@ -76,7 +76,7 @@ class ChoiceVar(BaseVar):
             decoded = self.categories[0]
         return decoded
 
-    def encode(self, decoded: Any) -> EncodingType:
+    def encode(self, decoded: Hashable) -> EncodingType:
         assert decoded in self.categories
         if self.encoding_len > 1:
             hot_index = self.categories.index(decoded)
@@ -258,7 +258,7 @@ class QrandintVar(BaseVar):
 class GridVar(BaseVar):
     """Grid sampler."""
 
-    def __init__(self, values: list[Any]):
+    def __init__(self, values: Sequence[Hashable]):
         """Sample a grid uniformly.
 
         `values` are expected to be ordered. They are not sorted by this class.
@@ -274,7 +274,7 @@ class GridVar(BaseVar):
     def bounds(self) -> BoundsType:
         return self.randint_var.bounds if (self.randint_var is not None) else ()
 
-    def decode(self, encoded: EncodingType, /) -> Any:
+    def decode(self, encoded: EncodingType, /) -> Hashable:
         if self.randint_var is not None:
             decoded_index = self.randint_var.decode(encoded)
             decoded = self.values[decoded_index]
@@ -284,7 +284,7 @@ class GridVar(BaseVar):
             decoded = self.values[0]
         return decoded
 
-    def encode(self, decoded: Any) -> EncodingType:
+    def encode(self, decoded: Hashable) -> EncodingType:
         assert decoded in self.values
         if self.randint_var is not None:
             decoded_index = self.values.index(decoded)
