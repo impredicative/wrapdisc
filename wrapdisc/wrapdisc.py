@@ -53,7 +53,7 @@ class Vars:
 class Objective:
     """Wrapped optimization objective callable."""
 
-    def __init__(self, func: Callable[[tuple], float], variables: Sequence[BaseVar]):
+    def __init__(self, func: Callable[[tuple], float], variables: Sequence[BaseVar], allow_nan: bool = False):
         """Return the wrapped optimization objective callable.
 
         An unbounded in-memory cache is used over the given input function. This is essential for preventing redundant calls to the input function.
@@ -62,9 +62,14 @@ class Objective:
 
         :param func: Input function.
         :param variables: Sequence of variables to optimize.
+        :param allow_nan: If `False` (default), any NaN input in an encoded solution leads to a NaN output of the objective function.
+                          This however requires a computationally expensive check. This was found to be relevant for an optimizer such as `scipy.optimize.dual_annealing`.
+                          If `True`, the check is skipped, and so any NaN input in an encoded solution is propagated to the objective function.
+                          For efficiency, it is recommended to set this to `True` if the optimizer is known to not supply a NaN input in any encoded solution.
         """
         self.func = cache(func)
         self.vars = Vars(variables)
+        self._disallow_nan = not allow_nan
 
     def __getstate__(self) -> dict[str, Any]:
         """Return the state to be pickled."""
@@ -99,7 +104,7 @@ class Objective:
         :param encoded: This is the encoded solution which first gets decoded. The original objective function is then called with the decoded solution.
         :param args: Additional positional parameters, if any, that are given to the objective function.
         """
-        if any(isnan(num) for num in encoded):
+        if self._disallow_nan and any(isnan(num) for num in encoded):
             # Note: "encoded==[nan, nan, nan]" was observed with scipy.optimize.dual_annealing, leading to a decoding assertion error without this condition.
             # Note: Checking "math.nan in encoded" doesn't detect a numpy nan.
             return nan
