@@ -58,7 +58,10 @@ class Objective:
 
         An unbounded in-memory cache is used over the given input function. This is essential for preventing redundant calls to the input function.
 
-        Note that the wrapped objective function is unsuitable for production use. For production use, the given input function is to be called directly.
+        Note that the wrapped objective function is unsuitable for post-optimization use. For post-optimization use, the given input function is to be called directly.
+
+        :param func: Input function.
+        :param variables: Sequence of variables to optimize.
         """
         self.func = cache(func)
         self.vars = Vars(variables)
