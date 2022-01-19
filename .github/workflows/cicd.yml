@@ -10,7 +10,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.10.0]  # List: https://git.io/JDLAE
+        python-version: ['3.10']  # List: https://git.io/JDLAE
     steps:
     - uses: actions/checkout@v2.4.0
     - name: Set up Python ${{ matrix.python-version }}
